@@ -32,7 +32,7 @@ function getPointTemplate() {
         </button>
       </div>
     </li>
-  `)
+  `);
 }
 
 export default class PointView {

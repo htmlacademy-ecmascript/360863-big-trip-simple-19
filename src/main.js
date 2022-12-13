@@ -1,15 +1,20 @@
-import FilterView from './view/filter.js';
-import SortingView from './view/sorting';
+import FilterView from './view/filter-view.js';
+import SortingView from './view/sorting-view';
 import {render} from './render';
 import SchedulePresenter from './presenter/schedule-presenter.js';
+import DataModel from './model/points-model';
 
-const header = document.querySelector('.page-header');
-const main = document.querySelector('.page-main');
-const tripControlElements = header.querySelector('.trip-controls__filters');
-const tripElements = main.querySelector('.trip-events');
-const schedulePresenter = new SchedulePresenter({scheduleContainer: tripElements});
+const HEADER = document.querySelector('.page-header');
+const MAIN = document.querySelector('.page-main');
+const TRIP_CONTROL_ELEMENTS = HEADER.querySelector('.trip-controls__filters');
+const TRIP_ELEMENTS = MAIN.querySelector('.trip-events');
+const DATA_MODEL = new DataModel();
+const SCHEDULE_PRESENTER = new SchedulePresenter({scheduleContainer: TRIP_ELEMENTS, DATA_MODEL});
 
-render(new FilterView(), tripControlElements);
-render(new SortingView(), tripElements);
+render(new FilterView(), TRIP_CONTROL_ELEMENTS);
+render(new SortingView(), TRIP_ELEMENTS);
 
-schedulePresenter.init();
+SCHEDULE_PRESENTER.init();
+
+
+//console.log(DATA_MODEL.getPoints());

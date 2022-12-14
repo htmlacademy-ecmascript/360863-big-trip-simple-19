@@ -1,4 +1,3 @@
-import {POINTS_COUNT} from '../const';
 import ScheduleView from '../view/schedule-view.js';
 import AddPointView from '../view/add-point-view';
 import EditPointView from '../view/edit-point-view';

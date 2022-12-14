@@ -3,7 +3,7 @@ import {humanizeDate, humanizeTime} from '../utils';
 
 function getOffersTemplate(point, offers) {
 
-  return offers.filter(offer => point.offers.includes(offer.id)).map(el =>
+  return offers.filter((offer) => point.offers.includes(offer.id)).map((el) =>
     `<li class="event__offer">
       <span class="event__offer-title">${el.title}</span>
       &plus;&euro;&nbsp;
@@ -14,7 +14,7 @@ function getOffersTemplate(point, offers) {
 }
 
 function getPointTemplate(point, destinations, offers) {
-  const DESTINATION = destinations.find((el) =>  el.id === point.destination);
+  const DESTINATION = destinations.find((el) => el.id === point.destination);
   const DATE_FROM = humanizeDate(point.date_from);
   const TIME_FROM = humanizeTime(point.date_from);
   const TIME_TO = humanizeTime(point.date_to);

@@ -15,6 +15,3 @@ render(new FilterView(), TRIP_CONTROL_ELEMENTS);
 render(new SortingView(), TRIP_ELEMENTS);
 
 SCHEDULE_PRESENTER.init();
-
-
-//console.log(DATA_MODEL.getPoints());

@@ -1,7 +1,7 @@
 import {getRandomArrayElement, getRandomInt} from '../utils';
 import dayjs from 'dayjs';
 
-const POINT_TYPES = ["taxi", "bus", "train", "ship", "drive", "flight", "check-in", "sightseeing", "restaurant"];
+const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DESTINATIONS_DESCRIPTIONS = [
   'Aliquam id orci ut lectus varius viverra',
   'tortor ac porta dapibus',
@@ -28,90 +28,101 @@ const OFFERS_TITLES = [
   'Book tickets'
 ];
 
+const DAYS_PLUS_MINIMUM = 3;
+const DAYS_PLUS_MAXIMUM = 10;
+const HOURS_PLUS_MINIMUM = 1;
+const HOURS_PLUS_MAXIMUM = 10;
+const BASE_PRICE_MINIMUM = 100;
+const BASE_PRICE_MAXIMUM = 1000;
+const OFFERS_MINIMUM_COUNT = 1;
+const OFFERS_MAXIMUM_COUNT = 5;
+const DESTINATIONS_COUNT = 5;
+
 export function generateDestinations(count) {
-  let data = [];
-  for (let i = 0; i < count; i++) {
-    data.push(
+  const DATA = [];
+
+  for (let i = 1; i <= count; i++) {
+    DATA.push(
       {
-        "id": i+1,
-        "description": getRandomArrayElement(DESTINATIONS_DESCRIPTIONS),
-        "name": getRandomArrayElement(CITY_NAMES),
-        "pictures": [
+        'id': i,
+        'description': getRandomArrayElement(DESTINATIONS_DESCRIPTIONS),
+        'name': getRandomArrayElement(CITY_NAMES),
+        'pictures': [
           {
-            "src": 'http://picsum.photos/300/200?r=' + getRandomInt(),
-            "description": getRandomArrayElement(PICTURES_DESCRIPTIONS),
+            'src': `http://picsum.photos/300/200?r=${getRandomInt()}`,
+            'description': getRandomArrayElement(PICTURES_DESCRIPTIONS),
           }
         ]
       }
-    )
+    );
   }
-  return data;
+  return DATA;
 }
-const DESTINATIONS = generateDestinations(5);
+const DESTINATIONS = generateDestinations(DESTINATIONS_COUNT);
 
 
 export function generateOffers(count) {
-  let data = [];
-  for (let i = 0; i < count; i++){
-    data.push({
-      "id": i+1,
-      "title": getRandomArrayElement(OFFERS_TITLES),
-      "price": getRandomInt(10, 1000)
-    })
+  const DATA = [];
+  for (let i = 1; i <= count; i++){
+    DATA.push({
+      'id': i,
+      'title': getRandomArrayElement(OFFERS_TITLES),
+      'price': getRandomInt(BASE_PRICE_MINIMUM, BASE_PRICE_MAXIMUM)
+    });
   }
-  return data;
+  return DATA;
 }
 
 export function generateOffersByType() {
-  return POINT_TYPES.map((type) => {
-    return {
-      "type": type,
-      "offers": generateOffers(getRandomInt(1, 5))
-    }
-  });
+  return POINT_TYPES.map((type) =>
+    ({
+      'type': type,
+      'offers': generateOffers(getRandomInt(OFFERS_MINIMUM_COUNT, OFFERS_MAXIMUM_COUNT))
+    })
+  );
 }
 const OFFERS_BY_TYPE = generateOffersByType();
 
 export function generatePoints(count) {
-  let data = [];
+  const DATA = [];
 
   for (let i = 0; i < count; i++) {
-    let pointType = getRandomArrayElement(POINT_TYPES);
-    let id = i;
-    let hourValueFrom = getRandomInt(1, 10);
-    let daysValueTo = getRandomInt(3, 10);
-    let hourValueTo = getRandomInt(1, 10);
+    const POINT_TYPE = getRandomArrayElement(POINT_TYPES);
+    const ID = i;
+    const HOUR_VALUE_FROM = getRandomInt(HOURS_PLUS_MINIMUM, HOURS_PLUS_MAXIMUM);
+    const DAYS_VALUE_TO = getRandomInt(DAYS_PLUS_MINIMUM, DAYS_PLUS_MAXIMUM);
+    const HOUR_VALUE_TO = getRandomInt(HOURS_PLUS_MINIMUM, HOURS_PLUS_MAXIMUM);
 
-    data.push({
-      "base_price": getRandomInt(100, 10000),
-      "date_from": dayjs().add(hourValueFrom, 'hour').format('YYYY-MM-DD'+ 'T' + 'HH:mm:ss'),
-      "date_to": dayjs().add(daysValueTo, 'day').add(hourValueTo, 'hour').format('YYYY-MM-DD'+ 'T' + 'HH:mm:ss'),
-      "destination": DESTINATIONS[getRandomInt(0, (DESTINATIONS.length - 1))].id,
-      "id": id.toString(),
-      "offers": [getRandomArrayElement(OFFERS_BY_TYPE
-        .find((el) => el.type === pointType).offers
-        .map((offer) => {return offer.id}))],
-      "type": pointType
+    DATA.push({
+      'base_price': getRandomInt(BASE_PRICE_MINIMUM, BASE_PRICE_MAXIMUM),
+      'date_from': dayjs().add(HOUR_VALUE_FROM, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
+      'date_to': dayjs().add(DAYS_VALUE_TO, 'day').add(HOUR_VALUE_TO, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
+      'destination': DESTINATIONS[getRandomInt(0, (DESTINATIONS.length - 1))].id,
+      'id': ID.toString(),
+      'offers': [getRandomArrayElement(OFFERS_BY_TYPE
+        .find((el) => el.type === POINT_TYPE).offers
+        .map((offer) => (offer.id)))],
+      'type': POINT_TYPE
     });
   }
 
-  return data;
+  return DATA;
 }
 
 export function generateBlankPoint() {
-  let pointType = getRandomArrayElement(POINT_TYPES);
-  let hourValueFrom = getRandomInt(1, 10);
-  let daysValueTo = getRandomInt(3, 10);
-  let hourValueTo = getRandomInt(1, 10);
+  const POINT_TYPE = getRandomArrayElement(POINT_TYPES);
+  const HOUR_VALUE_FROM = getRandomInt(HOURS_PLUS_MINIMUM, HOURS_PLUS_MAXIMUM);
+  const DAYS_VALUE_TO = getRandomInt(DAYS_PLUS_MINIMUM, DAYS_PLUS_MAXIMUM);
+  const HOURS_VALUE_TO = getRandomInt(HOURS_PLUS_MINIMUM, HOURS_PLUS_MAXIMUM);
   return [{
-    "base_price": getRandomInt(100, 10000),
-    "date_from": dayjs().add(hourValueFrom, 'hour').format('YYYY-MM-DD'+ 'T' + 'HH:mm:ss'),
-    "date_to": dayjs().add(daysValueTo, 'day').add(hourValueTo, 'hour').format('YYYY-MM-DD'+ 'T' + 'HH:mm:ss'),
-    "destination": DESTINATIONS[getRandomInt(0, (DESTINATIONS.length - 1))].id,
-    "id": null,
-    "offers": [getRandomArrayElement(OFFERS_BY_TYPE
-      .find((el) => el.type === pointType).offers
-      .map((offer) => {return offer.id}))],
-    "type": pointType
-  }]
+    'base_price': getRandomInt(BASE_PRICE_MINIMUM, BASE_PRICE_MAXIMUM),
+    'date_from': dayjs().add(HOUR_VALUE_FROM, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
+    'date_to': dayjs().add(DAYS_VALUE_TO, 'day').add(HOURS_VALUE_TO, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
+    'destination': DESTINATIONS[getRandomInt(0, (DESTINATIONS.length - 1))].id,
+    'id': null,
+    'offers': [getRandomArrayElement(OFFERS_BY_TYPE
+      .find((el) => el.type === POINT_TYPE).offers
+      .map((offer) => (offer.id)))],
+    'type': POINT_TYPE
+  }];
 }

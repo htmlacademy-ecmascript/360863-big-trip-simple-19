@@ -7,11 +7,14 @@ import {
   generatePoints,
 } from '../mock/points';
 
+const OFFERS_COUNT = 5;
+const DESTINATIONS_COUNT = 5;
+
 export default class DataModel {
   types = POINT_TYPES;
   offersByType = generateOffersByType();
-  destinations = generateDestinations(5);
-  offers = generateOffers(5);
+  destinations = generateDestinations(DESTINATIONS_COUNT);
+  offers = generateOffers(OFFERS_COUNT);
   points = generatePoints(POINTS_COUNT);
   blankPoint = generateBlankPoint();
 

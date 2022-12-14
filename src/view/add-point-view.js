@@ -1,6 +1,5 @@
 import {createElement} from '../render';
 import {POINT_TYPES} from '../const';
-import {getRandomInt} from '../utils';
 import dayjs from 'dayjs';
 
 function createTypesTemplate(currentType) {
@@ -12,12 +11,12 @@ function createTypesTemplate(currentType) {
 }
 
 function createOffersTemplate(offersByType, point) {
-  const OFFERS = offersByType.find((el) => {if(el.type === point.type){return el.type}}).offers;
+  const OFFERS = offersByType.find((el) => {if(el.type === point.type){return el.type;}}).offers;
 
   return OFFERS.map((offer) =>
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-1" type="checkbox" name="event-offer-${offer.title}"
-      ${point.offers.filter(el => el === offer.id).length > 0 ? 'checked' : ''}>
+      ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.title}-1">
         <span class="event__offer-title">Add ${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -28,22 +27,22 @@ function createOffersTemplate(offersByType, point) {
 }
 
 function createPhotosTemplate(destinations, point) {
-  const IMAGES = destinations.find((el) =>  el.id === point.destination).pictures;
+  const IMAGES = destinations.find((el) => el.id === point.destination).pictures;
 
-  return IMAGES.map( el =>
+  return IMAGES.map((el) =>
     `<img class="event__photo" src="${el.src}" alt="${el.description}">`
   ).join('');
 }
 
 function createDestinationsTemplate(destinations){
-  return destinations.map(el => `<option value="${el.name}"></option>`)
+  return destinations.map((el) => `<option value="${el.name}"></option>`);
 }
 
 function getAddPointTemplate(offers, destinations, point, offersByType) {
   const TYPES_TEMPLATE = createTypesTemplate(point.type);
-  const DESTINATION = destinations.find((el) =>  el.id === point.destination);
-  const TIME_FROM = dayjs(point.date_from).format("YY/MM/DD HH:mm");
-  const TIME_TO = dayjs(point.date_to).format("YY/MM/DD HH:mm");
+  const DESTINATION = destinations.find((el) => el.id === point.destination);
+  const TIME_FROM = dayjs(point.date_from).format('YY/MM/DD HH:mm');
+  const TIME_TO = dayjs(point.date_to).format('YY/MM/DD HH:mm');
   const OFFERS_TEMPLATE = createOffersTemplate(offersByType, point);
   const PHOTOS_TEMPLATE = createPhotosTemplate(destinations, point);
   const DESTINATIONS_TEMPLATE = createDestinationsTemplate(destinations);

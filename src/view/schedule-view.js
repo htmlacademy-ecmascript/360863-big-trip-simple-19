@@ -8,13 +8,13 @@ function createScheduleTemplate() {
 
 export default class ScheduleView {
 
-  getTemplate() {
+  get Template() {
     return createScheduleTemplate();
   }
 
-  getElement() {
+  get Element() {
     if(!this.element) {
-      this.element = createElement(this.getTemplate());
+      this.element = createElement(this.Template);
     }
 
     return this.element;

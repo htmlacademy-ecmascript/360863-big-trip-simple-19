@@ -32,21 +32,22 @@ function createSortingTemplate() {
 }
 
 export default class SortingView {
+  #element;
 
-  get Template() {
+  get template() {
     return createSortingTemplate();
   }
 
-  get Element() {
-    if(!this.element) {
-      this.element = createElement(this.Template);
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 
 }

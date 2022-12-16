@@ -130,6 +130,7 @@ export default class AddPointView {
   #destinations;
   #point;
   #offersByType;
+  #element;
 
   constructor({offers, destinations, point, offersByType}) {
     this.#offers = offers;
@@ -138,20 +139,20 @@ export default class AddPointView {
     this.#offersByType = offersByType;
   }
 
-  get Template() {
+  get template() {
     return getAddPointTemplate(this.#offers, this.#destinations, this.#point, this.#offersByType);
   }
 
-  get Element () {
-    if (!this.element) {
-      this.element = createElement(this.Template);
+  get element () {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 
 }

@@ -7,21 +7,21 @@ function createScheduleTemplate() {
 }
 
 export default class ScheduleView {
+  #element;
 
-  get Template() {
+  get template() {
     return createScheduleTemplate();
   }
 
-  get Element() {
-    if(!this.element) {
-      this.element = createElement(this.Template);
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
-
 }

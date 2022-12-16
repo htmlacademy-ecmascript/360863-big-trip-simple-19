@@ -116,6 +116,7 @@ export default class EditPointView {
   #destinations;
   #point;
   #offersByType;
+  #element;
 
   constructor({offers, destinations, point, offersByType}) {
     this.#offers = offers;
@@ -124,20 +125,20 @@ export default class EditPointView {
     this.#offersByType = offersByType;
   }
 
-  get Template() {
+  get template() {
     return createPointEditorTemplate(this.#offers, this.#destinations, this.#point, this.#offersByType);
   }
 
-  get Element() {
-    if(!this.element) {
-      this.element = createElement(this.Template);
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 
 }

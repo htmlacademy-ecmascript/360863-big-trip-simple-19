@@ -54,6 +54,7 @@ export default class PointView {
   #point;
   #destinations;
   #offers;
+  #element;
 
   constructor({point, destinations, offers}) {
     this.#point = point;
@@ -61,19 +62,19 @@ export default class PointView {
     this.#offers = offers;
   }
 
-  get Template() {
+  get template() {
     return getPointTemplate(this.#point, this.#destinations, this.#offers);
   }
 
-  get Element() {
-    if(!this.element) {
-      this.element = createElement(this.Template);
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

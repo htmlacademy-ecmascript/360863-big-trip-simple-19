@@ -21,18 +21,18 @@ export default class SchedulePresenter {
   }
 
   init() {
-    this.#points = [...this.#dataModel.Points];
-    this.#destinations = [...this.#dataModel.Destinations];
-    this.#offersByType = [...this.#dataModel.OffersByType];
-    this.#offers = [...this.#dataModel.Offers];
-    this.#blankPoint = [...this.#dataModel.BlankPoint];
+    this.#points = [...this.#dataModel.points];
+    this.#destinations = [...this.#dataModel.destinations];
+    this.#offersByType = [...this.#dataModel.offersByType];
+    this.#offers = [...this.#dataModel.offers];
+    this.#blankPoint = [...this.#dataModel.blankPoint];
 
     render(this.#scheduleComponent, this.#scheduleContainer);
-    render(new EditPointView({offers: this.#offers, destinations: this.#destinations, point: this.#blankPoint[0], offersByType: this.#offersByType}), this.#scheduleComponent.Element);
-    render(new AddPointView({offers: this.#offers, destinations: this.#destinations, point: this.#blankPoint[0], offersByType: this.#offersByType}), this.#scheduleComponent.Element);
+    render(new EditPointView({offers: this.#offers, destinations: this.#destinations, point: this.#blankPoint[0], offersByType: this.#offersByType}), this.#scheduleComponent.element);
+    render(new AddPointView({offers: this.#offers, destinations: this.#destinations, point: this.#blankPoint[0], offersByType: this.#offersByType}), this.#scheduleComponent.element);
 
     for (let i = 1; i < this.#points.length; i++) {
-      render(new PointView({point: this.#points[i], destinations: this.#destinations, offers: this.#offers}), this.#scheduleComponent.Element);
+      render(new PointView({point: this.#points[i], destinations: this.#destinations, offers: this.#offers}), this.#scheduleComponent.element);
     }
   }
 }

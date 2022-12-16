@@ -18,27 +18,27 @@ export default class DataModel {
   #points = generatePoints(POINTS_COUNT);
   #blankPoint = generateBlankPoint();
 
-  get OffersByType() {
+  get offersByType() {
     return this.#offersByType;
   }
 
-  get Destinations() {
+  get destinations() {
     return this.#destinations;
   }
 
-  get Offers() {
+  get offers() {
     return this.#offers;
   }
 
-  get Types() {
+  get types() {
     return this.#types;
   }
 
-  get Points() {
+  get points() {
     return this.#points;
   }
 
-  get BlankPoint() {
+  get blankPoint() {
     return this.#blankPoint;
   }
 }

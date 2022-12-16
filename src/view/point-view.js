@@ -10,7 +10,6 @@ function getOffersTemplate(point, offers) {
       <span class="event__offer-price">${el.price}</span>
     </li>`
   ).join('');
-
 }
 
 function getPointTemplate(point, destinations, offers) {

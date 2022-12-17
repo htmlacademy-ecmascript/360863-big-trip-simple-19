@@ -21,7 +21,7 @@ export default class SchedulePresenter {
     this.#dataModel = DATA_MODEL;
   }
 
-  init(TRIP_ELEMENTS) {
+  init(container) {
     this.#points = [...this.#dataModel.points];
     this.#destinations = [...this.#dataModel.destinations];
     this.#offersByType = [...this.#dataModel.offersByType];
@@ -36,7 +36,7 @@ export default class SchedulePresenter {
         this.#renderPoint({point: this.#points[i], offers: this.#offers, destinations: this.#destinations, offersByType: this.#offersByType});
       }
     } else {
-      render(new EmptyPointsView(), TRIP_ELEMENTS);
+      render(new EmptyPointsView(), container);
     }
   }
 

@@ -11,34 +11,34 @@ const OFFERS_COUNT = 5;
 const DESTINATIONS_COUNT = 5;
 
 export default class DataModel {
-  types = POINT_TYPES;
-  offersByType = generateOffersByType();
-  destinations = generateDestinations(DESTINATIONS_COUNT);
-  offers = generateOffers(OFFERS_COUNT);
-  points = generatePoints(POINTS_COUNT);
-  blankPoint = generateBlankPoint();
+  #types = POINT_TYPES;
+  #offersByType = generateOffersByType();
+  #destinations = generateDestinations(DESTINATIONS_COUNT);
+  #offers = generateOffers(OFFERS_COUNT);
+  #points = generatePoints(POINTS_COUNT);
+  #blankPoint = generateBlankPoint();
 
-  getOffersByType() {
-    return this.offersByType;
+  get offersByType() {
+    return this.#offersByType;
   }
 
-  getDestinations() {
-    return this.destinations;
+  get destinations() {
+    return this.#destinations;
   }
 
-  getOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 
-  getTypes() {
-    return this.types;
+  get types() {
+    return this.#types;
   }
 
-  getPoints() {
-    return this.points;
+  get points() {
+    return this.#points;
   }
 
-  getBlankPoint() {
-    return this.blankPoint;
+  get blankPoint() {
+    return this.#blankPoint;
   }
 }

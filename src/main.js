@@ -14,4 +14,4 @@ const SCHEDULE_PRESENTER = new SchedulePresenter({scheduleContainer: TRIP_ELEMEN
 render(new FilterView(), TRIP_CONTROL_ELEMENTS);
 render(new SortingView(), TRIP_ELEMENTS);
 
-SCHEDULE_PRESENTER.init();
+SCHEDULE_PRESENTER.init(TRIP_ELEMENTS);

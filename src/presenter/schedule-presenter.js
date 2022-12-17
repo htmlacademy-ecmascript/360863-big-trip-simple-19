@@ -4,6 +4,7 @@ import EditPointView from '../view/edit-point-view';
 import PointView from '../view/point-view';
 
 import {render} from '../render.js';
+import EmptyPointsView from '../view/empty-points-view';
 
 export default class SchedulePresenter {
   #scheduleComponent = new ScheduleView();
@@ -20,18 +21,22 @@ export default class SchedulePresenter {
     this.#dataModel = DATA_MODEL;
   }
 
-  init() {
+  init(container) {
     this.#points = [...this.#dataModel.points];
     this.#destinations = [...this.#dataModel.destinations];
     this.#offersByType = [...this.#dataModel.offersByType];
     this.#offers = [...this.#dataModel.offers];
     this.#blankPoint = [...this.#dataModel.blankPoint];
 
-    render(this.#scheduleComponent, this.#scheduleContainer);
-    render(new AddPointView({offers: this.#offers, destinations: this.#destinations, point: this.#blankPoint[0], offersByType: this.#offersByType}), this.#scheduleComponent.element);
+    if (this.#points.length > 0) {
+      render(this.#scheduleComponent, this.#scheduleContainer);
+      render(new AddPointView({offers: this.#offers, destinations: this.#destinations, point: this.#blankPoint[0], offersByType: this.#offersByType}), this.#scheduleComponent.element);
 
-    for (let i = 1; i < this.#points.length; i++) {
-      this.#renderPoint({point: this.#points[i], offers: this.#offers, destinations: this.#destinations, offersByType: this.#offersByType});
+      for (let i = 1; i < this.#points.length; i++) {
+        this.#renderPoint({point: this.#points[i], offers: this.#offers, destinations: this.#destinations, offersByType: this.#offersByType});
+      }
+    } else {
+      render(new EmptyPointsView(), container);
     }
   }
 

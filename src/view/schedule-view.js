@@ -1,4 +1,4 @@
-import {createElement} from '../render';
+import AbstractView from '../framework/view/abstract-view';
 
 function createScheduleTemplate() {
   return (`
@@ -6,22 +6,8 @@ function createScheduleTemplate() {
   `);
 }
 
-export default class ScheduleView {
-  #element;
-
+export default class ScheduleView extends AbstractView {
   get template() {
     return createScheduleTemplate();
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

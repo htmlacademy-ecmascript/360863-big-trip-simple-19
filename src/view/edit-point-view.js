@@ -1,6 +1,6 @@
-import {createElement} from '../render';
 import {POINT_TYPES} from '../const';
 import dayjs from 'dayjs';
+import AbstractView from '../framework/view/abstract-view';
 
 function createTypesTemplate(currentType) {
   return POINT_TYPES.map((type) =>
@@ -111,14 +111,14 @@ function createPointEditorTemplate(offers, destinations, point, offersByType) {
   `);
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
   #offers;
   #destinations;
   #point;
   #offersByType;
-  #element;
 
   constructor({offers, destinations, point, offersByType}) {
+    super();
     this.#offers = offers;
     this.#destinations = destinations;
     this.#point = point;
@@ -128,17 +128,4 @@ export default class EditPointView {
   get template() {
     return createPointEditorTemplate(this.#offers, this.#destinations, this.#point, this.#offersByType);
   }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
-
 }

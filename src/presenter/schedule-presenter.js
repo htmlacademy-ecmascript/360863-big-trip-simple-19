@@ -3,7 +3,7 @@ import AddPointView from '../view/add-point-view';
 import EditPointView from '../view/edit-point-view';
 import PointView from '../view/point-view';
 
-import {render} from '../render.js';
+import {render} from '../framework/render.js';
 import EmptyPointsView from '../view/empty-points-view';
 
 export default class SchedulePresenter {

@@ -1,6 +1,6 @@
 import FilterView from './view/filter-view.js';
 import SortingView from './view/sorting-view';
-import {render} from './render';
+import {render} from './framework/render.js';
 import SchedulePresenter from './presenter/schedule-presenter.js';
 import DataModel from './model/points-model';
 

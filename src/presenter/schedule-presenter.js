@@ -41,41 +41,46 @@ export default class SchedulePresenter {
   }
 
   #renderPoint({point, offers, destinations, offersByType}) {
-    const POINT_COMPONENT = new PointView({point, offers, destinations});
-    const POINT_EDIT_COMPONENT = new EditPointView({offers, destinations, point, offersByType});
-
-    const REPLACE_POINT_TO_FORM = () => {
-      this.#scheduleComponent.element.replaceChild(POINT_EDIT_COMPONENT.element, POINT_COMPONENT.element);
-    };
-
-    const REPLACE_FORM_TO_CARD = () => {
-      this.#scheduleComponent.element.replaceChild(POINT_COMPONENT.element, POINT_EDIT_COMPONENT.element);
-    };
-
     const ESC_KEY_DOWN_HANDLER = (evt) => {
       if(evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
-        REPLACE_FORM_TO_CARD();
+        replaceFormToPoint.call(this);
         document.removeEventListener('keydown', ESC_KEY_DOWN_HANDLER);
       }
     };
 
-    const CLOSE_EDIT_HANDLER = () => {
-      REPLACE_FORM_TO_CARD();
-      POINT_EDIT_COMPONENT.element.querySelector('.event--edit').removeEventListener('click', CLOSE_EDIT_HANDLER);
-    };
-
-    POINT_COMPONENT.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      REPLACE_POINT_TO_FORM();
-      document.addEventListener('keydown', ESC_KEY_DOWN_HANDLER);
-      POINT_EDIT_COMPONENT.element.querySelector('.event--edit').addEventListener('click', CLOSE_EDIT_HANDLER);
+    const POINT_COMPONENT = new PointView({
+      point,
+      offers,
+      destinations,
+      onEditClick: () => {
+        replacePointToForm.call(this);
+        document.addEventListener('keydown', ESC_KEY_DOWN_HANDLER);
+      }
     });
 
-    POINT_EDIT_COMPONENT.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      REPLACE_FORM_TO_CARD();
-      document.removeEventListener('keydown', ESC_KEY_DOWN_HANDLER);
+    const POINT_EDIT_COMPONENT = new EditPointView({
+      offers,
+      destinations,
+      point,
+      offersByType,
+      onFormSubmit: () => {
+        replaceFormToPoint.call(this);
+        document.removeEventListener('keydown', ESC_KEY_DOWN_HANDLER);
+      },
+      onCloseClick: () => {
+        replaceFormToPoint.call(this);
+        document.removeEventListener('keydown', ESC_KEY_DOWN_HANDLER);
+      }
     });
+
+    function replacePointToForm() {
+      this.#scheduleComponent.element.replaceChild(POINT_EDIT_COMPONENT.element, POINT_COMPONENT.element);
+    }
+
+    function replaceFormToPoint() {
+      this.#scheduleComponent.element.replaceChild(POINT_COMPONENT.element, POINT_EDIT_COMPONENT.element);
+    }
 
     render(POINT_COMPONENT, this.#scheduleComponent.element);
   }

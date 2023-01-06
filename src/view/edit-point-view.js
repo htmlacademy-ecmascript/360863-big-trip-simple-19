@@ -1,6 +1,6 @@
-import {createElement} from '../render';
 import {POINT_TYPES} from '../const';
 import dayjs from 'dayjs';
+import AbstractView from '../framework/view/abstract-view';
 
 function createTypesTemplate(currentType) {
   return POINT_TYPES.map((type) =>
@@ -111,34 +111,38 @@ function createPointEditorTemplate(offers, destinations, point, offersByType) {
   `);
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
   #offers;
   #destinations;
   #point;
   #offersByType;
-  #element;
+  #handleFormSubmit;
+  #handleCloseClick;
 
-  constructor({offers, destinations, point, offersByType}) {
+  constructor({offers, destinations, point, offersByType, onFormSubmit, onCloseClick}) {
+    super();
     this.#offers = offers;
     this.#destinations = destinations;
     this.#point = point;
     this.#offersByType = offersByType;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleCloseClick = onCloseClick;
+
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
   }
 
   get template() {
     return createPointEditorTemplate(this.#offers, this.#destinations, this.#point, this.#offersByType);
   }
 
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
-
+  #formCloseHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCloseClick();
+  };
 }

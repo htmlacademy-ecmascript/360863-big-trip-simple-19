@@ -1,4 +1,4 @@
-import {humanizeDate, humanizeTime} from '../utils';
+import {humanizeDate, humanizeTime} from '../utils/utils';
 import AbstractView from '../framework/view/abstract-view';
 
 function getOffersTemplate(point, offers) {

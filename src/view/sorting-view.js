@@ -10,7 +10,7 @@ function createSortingItemTemplate(sorting, isChecked) {
       </div>
   `);
 }
-/*TODO: немного не понял как передается параметр isChecked*/
+/*TODO:разобраться на консультации как передается параметр isChecked */
 
 function createSortingTemplate(sortingItems) {
 

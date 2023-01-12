@@ -1,5 +1,7 @@
-import {getRandomArrayElement, getRandomInt} from '../utils';
+import {getRandomArrayElement, getRandomInt} from '../utils/utils';
 import dayjs from 'dayjs';
+import dayjsRandom from 'dayjs-random';
+dayjs.extend(dayjsRandom);
 
 const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DESTINATIONS_DESCRIPTIONS = [
@@ -92,11 +94,12 @@ export function generatePoints(count) {
     const HOUR_VALUE_FROM = getRandomInt(HOURS_PLUS_MINIMUM, HOURS_PLUS_MAXIMUM);
     const DAYS_VALUE_TO = getRandomInt(DAYS_PLUS_MINIMUM, DAYS_PLUS_MAXIMUM);
     const HOUR_VALUE_TO = getRandomInt(HOURS_PLUS_MINIMUM, HOURS_PLUS_MAXIMUM);
+    const DATE = dayjs.between('2022-12-22', '2023-02-22');
 
     DATA.push({
       'base_price': getRandomInt(BASE_PRICE_MINIMUM, BASE_PRICE_MAXIMUM),
-      'date_from': dayjs().add(HOUR_VALUE_FROM, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
-      'date_to': dayjs().add(DAYS_VALUE_TO, 'day').add(HOUR_VALUE_TO, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
+      'date_from': dayjs(DATE).add(HOUR_VALUE_FROM, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
+      'date_to': dayjs(DATE).add(DAYS_VALUE_TO, 'day').add(HOUR_VALUE_TO, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
       'destination': DESTINATIONS[getRandomInt(0, (DESTINATIONS.length - 1))].id,
       'id': ID.toString(),
       'offers': [getRandomArrayElement(OFFERS_BY_TYPE

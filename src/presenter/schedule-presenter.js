@@ -15,7 +15,7 @@ export default class SchedulePresenter {
   #offersByType;
   #offers;
   #blankPoint;
-  #sortingList
+  #sortingList;
   #noPointComponent = new EmptyPointsView();
   #scheduleComponent = new ScheduleView();
   #pointPresenter = new Map();
@@ -48,11 +48,11 @@ export default class SchedulePresenter {
   }
 
   #renderSort() {
-    render(new SortingView({SORTING: this.#sortingList}), this.#scheduleContainer)
+    render(new SortingView({SORTING: this.#sortingList}), this.#scheduleContainer);
   }
 
   #renderAddPoint() {
-    render(new AddPointView({offers: this.#offers, destinations: this.#destinations, point: this.#blankPoint[0], offersByType: this.#offersByType}), this.#scheduleComponent.element)
+    render(new AddPointView({offers: this.#offers, destinations: this.#destinations, point: this.#blankPoint[0], offersByType: this.#offersByType}), this.#scheduleComponent.element);
   }
 
   #renderPoint({point, offers, destinations, offersByType}) {
@@ -60,10 +60,10 @@ export default class SchedulePresenter {
       scheduleComponent: this.#scheduleComponent.element,
       onDataChange: this.#handlePointChange,
       onModeChange: this.#handleModeChange,
-    })
+    });
 
-    POINT_PRESENTER.init(point, offers, destinations, offersByType)
-    this.#pointPresenter.set(point.id, POINT_PRESENTER)
+    POINT_PRESENTER.init(point, offers, destinations, offersByType);
+    this.#pointPresenter.set(point.id, POINT_PRESENTER);
   }
 
   #renderPointsList() {
@@ -78,9 +78,9 @@ export default class SchedulePresenter {
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offers, this.#destinations, this.#offersByType);
-  }
+  };
 
   #handleModeChange = () => {
-    this.#pointPresenter.forEach((presenter) => presenter.resetView())
-  }
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
+  };
 }

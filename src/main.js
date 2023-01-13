@@ -9,7 +9,6 @@ const HEADER = document.querySelector('.page-header');
 const MAIN = document.querySelector('.page-main');
 const TRIP_CONTROL_ELEMENTS = HEADER.querySelector('.trip-controls__filters');
 const TRIP_ELEMENTS = MAIN.querySelector('.trip-events');
-const SCHEDULE_CONTAINER = MAIN.querySelector('.page-body__container');
 const DATA_MODEL = new DataModel();
 const SORTING_MODEL = new SortingModel();
 const SCHEDULE_PRESENTER = new SchedulePresenter({scheduleContainer: TRIP_ELEMENTS, DATA_MODEL, SORTING_MODEL});

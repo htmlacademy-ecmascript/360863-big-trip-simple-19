@@ -1,12 +1,11 @@
 import PointView from '../view/point-view';
 import {remove, render, replace} from '../framework/render';
-import AddPointView from '../view/add-point-view'; /*TODO: куда-то добавить вывод AddPoint Component*/
 import EditPointView from '../view/edit-point-view';
 
 const MODE = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
-}
+};
 
 export default class PointPresenter {
   #scheduleComponent;
@@ -49,7 +48,7 @@ export default class PointPresenter {
       offersByType: this.#offersByType,
       onFormSubmit: this.#handlerFormSubmit,
       onCloseClick: this.#handlerOnCloseClick,
-    })
+    });
 
     if (PREV_POINT_COMPONENT === null || PREV_EDIT_POINT_COMPONENT === null) {
       render(this.#pointComponent, this.#scheduleComponent);
@@ -87,7 +86,7 @@ export default class PointPresenter {
   }
 
   #replaceFormToPoint() {
-    replace(this.#pointComponent, this.#pointEditComponent)
+    replace(this.#pointComponent, this.#pointEditComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = MODE.DEFAULT;
   }
@@ -98,17 +97,17 @@ export default class PointPresenter {
       this.#replacePointToForm();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
-  }
+  };
 
   #editClickHandler = () => {
     this.#replacePointToForm();
-  }
+  };
 
   #handlerFormSubmit = () => {
     this.#replaceFormToPoint();
-  }
+  };
 
   #handlerOnCloseClick = () => {
     this.#replaceFormToPoint();
-  }
+  };
 }

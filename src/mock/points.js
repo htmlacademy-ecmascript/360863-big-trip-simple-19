@@ -62,7 +62,6 @@ export function generateDestinations(count) {
 }
 const DESTINATIONS = generateDestinations(DESTINATIONS_COUNT);
 
-
 export function generateOffers(count) {
   const DATA = [];
   for (let i = 1; i <= count; i++){

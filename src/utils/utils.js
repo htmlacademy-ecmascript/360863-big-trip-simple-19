@@ -33,8 +33,11 @@ export function humanizeTime(date) {
   return date ? dayjs(date).format(TIME_FORMAT) : '';
 }
 
-export function isDateFuture (date) {
+export function isDateFuture(date) {
   return !dayjs().isAfter(date);
 }
-
 /*TODO: кажется функция не верно работает как будто из-за временной зоны?*/
+
+export function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}

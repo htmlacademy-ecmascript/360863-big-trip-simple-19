@@ -9,6 +9,7 @@ function createFilterItemTemplate(filter, isChecked) {
   </div>`
   );
 }
+/*TODO:разобраться на консультации как передается параметр isChecked */
 
 function createFilterTemplate(filterItems) {
   const FILTER_ITEMS_TEMPLATE = filterItems

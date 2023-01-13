@@ -1,20 +1,29 @@
 import PointView from '../view/point-view';
-import {render, replace} from '../framework/render';
+import {remove, render, replace} from '../framework/render';
 import AddPointView from '../view/add-point-view'; /*TODO: куда-то добавить вывод AddPoint Component*/
 import EditPointView from '../view/edit-point-view';
 
+const MODE = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+}
+
 export default class PointPresenter {
   #scheduleComponent;
-  #pointComponent;
-  #pointAddComponent;
-  #pointEditComponent;
+  #pointComponent = null;
+  #pointEditComponent = null;
+  #handleDataChange;
+  #handleModeChange;
   #point;
   #offers;
   #destinations;
   #offersByType;
+  #mode = MODE.DEFAULT;
 
-  constructor({scheduleComponent}) {
+  constructor({scheduleComponent, onDataChange, onModeChange}) {
     this.#scheduleComponent = scheduleComponent;
+    this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   init(point, offers, destinations, offersByType) {
@@ -22,6 +31,9 @@ export default class PointPresenter {
     this.#offers = offers;
     this.#destinations = destinations;
     this.#offersByType = offersByType;
+
+    const PREV_POINT_COMPONENT = this.#pointComponent;
+    const PREV_EDIT_POINT_COMPONENT = this.#pointEditComponent;
 
     this.#pointComponent = new PointView({
       point: this.#point,
@@ -39,17 +51,45 @@ export default class PointPresenter {
       onCloseClick: this.#handlerOnCloseClick,
     })
 
-    render(this.#pointComponent, this.#scheduleComponent);
+    if (PREV_POINT_COMPONENT === null || PREV_EDIT_POINT_COMPONENT === null) {
+      render(this.#pointComponent, this.#scheduleComponent);
+      return;
+    }
+
+    if(this.#mode === MODE.DEFAULT) {
+      replace(this.#pointComponent, PREV_POINT_COMPONENT);
+    }
+
+    if(this.#mode === MODE.EDITING) {
+      replace(this.#pointEditComponent, PREV_EDIT_POINT_COMPONENT);
+    }
+
+    remove(PREV_POINT_COMPONENT);
+    remove(PREV_EDIT_POINT_COMPONENT);
+  }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
+  }
+
+  resetView() {
+    if(this.#mode !== MODE.DEFAULT) {
+      this.#replaceFormToPoint();
+    }
   }
 
   #replacePointToForm() {
     replace(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleModeChange();
+    this.#mode = MODE.EDITING;
   }
 
   #replaceFormToPoint() {
     replace(this.#pointComponent, this.#pointEditComponent)
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = MODE.DEFAULT;
   }
 
   #escKeyDownHandler = (evt) => {

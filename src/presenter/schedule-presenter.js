@@ -3,11 +3,10 @@ import AddPointView from '../view/add-point-view';
 import {render, RenderPosition} from '../framework/render.js';
 import EmptyPointsView from '../view/empty-points-view';
 import SortingView from '../view/sorting-view';
-import BoardView from '../view/board-container';
 import PointPresenter from './point-presenter';
+import {updateItem} from '../utils/utils';
 
 export default class SchedulePresenter {
-  #scheduleComponent = new ScheduleView();
   #scheduleContainer;
   #dataModel;
   #sortingModel;
@@ -18,6 +17,8 @@ export default class SchedulePresenter {
   #blankPoint;
   #sortingList
   #noPointComponent = new EmptyPointsView();
+  #scheduleComponent = new ScheduleView();
+  #pointPresenter = new Map();
 
   constructor({scheduleContainer, DATA_MODEL, SORTING_MODEL}) {
     this.#scheduleContainer = scheduleContainer;
@@ -57,17 +58,29 @@ export default class SchedulePresenter {
   #renderPoint({point, offers, destinations, offersByType}) {
     const POINT_PRESENTER = new PointPresenter({
       scheduleComponent: this.#scheduleComponent.element,
+      onDataChange: this.#handlePointChange,
+      onModeChange: this.#handleModeChange,
     })
 
     POINT_PRESENTER.init(point, offers, destinations, offersByType)
+    this.#pointPresenter.set(point.id, POINT_PRESENTER)
   }
 
   #renderPointsList() {
     render(this.#scheduleComponent, this.#scheduleContainer);
-    this.#points.forEach((point) => this.#renderPoint({point: point, offers: this.#offers, destinations: this.#destinations, offersByType: this.#offersByType}))
+    this.#points.forEach((point) => this.#renderPoint({point: point, offers: this.#offers, destinations: this.#destinations, offersByType: this.#offersByType}));
   }
 
   #renderNoPoints() {
-    render(this.#noPointComponent, this.#scheduleComponent.element, RenderPosition.AFTERBEGIN)
+    render(this.#noPointComponent, this.#scheduleComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #handlePointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offers, this.#destinations, this.#offersByType);
+  }
+
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView())
   }
 }

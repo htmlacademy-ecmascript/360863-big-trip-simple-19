@@ -56,14 +56,14 @@ export default class SchedulePresenter {
   }
 
   #renderPoint({point, offers, destinations, offersByType}) {
-    const POINT_PRESENTER = new PointPresenter({
+    const pointPresenter = new PointPresenter({
       scheduleComponent: this.#scheduleComponent.element,
       onDataChange: this.#handlePointChange,
       onModeChange: this.#handleModeChange,
     });
 
-    POINT_PRESENTER.init(point, offers, destinations, offersByType);
-    this.#pointPresenter.set(point.id, POINT_PRESENTER);
+    pointPresenter.init(point, offers, destinations, offersByType);
+    this.#pointPresenter.set(point.id, pointPresenter);
   }
 
   #renderPointsList() {

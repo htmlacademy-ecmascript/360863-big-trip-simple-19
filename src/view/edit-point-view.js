@@ -11,9 +11,9 @@ function createTypesTemplate(currentType) {
 }
 
 function createOffersTemplate(offersByType, point) {
-  const OFFERS = offersByType.find((el) => {if(el.type === point.type){return el.type;}}).offers;
+  const offers = offersByType.find((el) => {if(el.type === point.type){return el.type;}}).offers;
 
-  return OFFERS.map((offer) =>
+  return offers.map((offer) =>
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-1" type="checkbox" name="event-offer-${offer.title}"
       ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''}>
@@ -31,12 +31,12 @@ function createDestinationsTemplate(destinations){
 }
 
 function createPointEditorTemplate(offers, destinations, point, offersByType) {
-  const TYPES_TEMPLATE = createTypesTemplate(point.type);
-  const DESTINATION = destinations.find((el) => el.id === point.destination);
-  const TIME_FROM = dayjs(point.date_from).format('YY/MM/DD HH:mm');
-  const TIME_TO = dayjs(point.date_to).format('YY/MM/DD HH:mm');
-  const OFFERS_TEMPLATE = createOffersTemplate(offersByType, point);
-  const DESTINATIONS_TEMPLATE = createDestinationsTemplate(destinations);
+  const typesTemplate = createTypesTemplate(point.type);
+  const pointDestination = destinations.find((el) => el.id === point.destination);
+  const timeFrom = dayjs(point.date_from).format('YY/MM/DD HH:mm');
+  const timeTo = dayjs(point.date_to).format('YY/MM/DD HH:mm');
+  const offersTemplate = createOffersTemplate(offersByType, point);
+  const destinationsTemplate = createDestinationsTemplate(destinations);
 
   return (`
   <li class="trip-events__item">
@@ -52,7 +52,7 @@ function createPointEditorTemplate(offers, destinations, point, offersByType) {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-                ${TYPES_TEMPLATE}
+                ${typesTemplate}
 
             </fieldset>
           </div>
@@ -62,18 +62,18 @@ function createPointEditorTemplate(offers, destinations, point, offersByType) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${point.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${DESTINATION.name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${DESTINATIONS_TEMPLATE}
+            ${destinationsTemplate}
           </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${TIME_FROM}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${timeFrom}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${TIME_TO}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${timeTo}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -96,14 +96,14 @@ function createPointEditorTemplate(offers, destinations, point, offersByType) {
 
           <div class="event__available-offers">
 
-            ${OFFERS_TEMPLATE}
+            ${offersTemplate}
 
           </div>
         </section>
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${DESTINATION.description}</p>
+          <p class="event__destination-description">${pointDestination.description}</p>
         </section>
       </section>
     </form>

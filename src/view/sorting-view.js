@@ -14,13 +14,13 @@ function createSortingItemTemplate(sorting, isChecked) {
 
 function createSortingTemplate(sortingItems) {
 
-  const SORTING_ITEM_TEMPLATE = sortingItems
+  const sortingItemTemplate = sortingItems
     .map((sorting, index) => createSortingItemTemplate(sorting, index === 0))
     .join('');
 
   return (`
     <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-    ${SORTING_ITEM_TEMPLATE}
+    ${sortingItemTemplate}
   </form>
   `);
 }

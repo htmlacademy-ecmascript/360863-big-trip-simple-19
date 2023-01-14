@@ -12,13 +12,13 @@ function createFilterItemTemplate(filter, isChecked) {
 /*TODO:разобраться на консультации как передается параметр isChecked */
 
 function createFilterTemplate(filterItems) {
-  const FILTER_ITEMS_TEMPLATE = filterItems
+  const filterItemTemplate = filterItems
     .map((filter, index) => createFilterItemTemplate(filter, index === 0))
     .join('');
 
   return (`
     <form class="trip-filters" action="#" method="get">
-      ${FILTER_ITEMS_TEMPLATE}
+      ${filterItemTemplate}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>
   `);

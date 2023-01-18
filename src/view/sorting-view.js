@@ -5,12 +5,11 @@ function createSortingItemTemplate(sorting, isChecked) {
 
   return (`
         <div class="trip-sort__item  trip-sort__item--${name}">
-        <input id="sort-${name}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${name}" ${isChecked ? 'checked' : ''}>
+        <input id="sort-${name}" class="trip-sort__input  visually-hidden" type="radio" data-sort-type="${name}" name="trip-sort" value="sort-${name}" ${isChecked ? 'checked' : ''}>
         <label class="trip-sort__btn" for="sort-${name}">${name}</label>
       </div>
   `);
 }
-/*TODO:разобраться на консультации как передается параметр isChecked */
 
 function createSortingTemplate(sortingItems) {
 
@@ -27,13 +26,23 @@ function createSortingTemplate(sortingItems) {
 
 export default class SortingView extends AbstractView {
   #sorting;
+  #handleSortTypeChange;
 
-  constructor({SORTING}) {
+  constructor({SORTING, onSortTypeChange}) {
     super();
     this.#sorting = SORTING;
+    this.#handleSortTypeChange = onSortTypeChange;
+
+    this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }
 
   get template() {
     return createSortingTemplate(this.#sorting);
   }
+
+  #sortTypeChangeHandler = (evt) => {
+    if(evt.target.classList.contains('trip-sort__input')) {
+      this.#handleSortTypeChange(evt.target.dataset.sortType);
+    }
+  };
 }

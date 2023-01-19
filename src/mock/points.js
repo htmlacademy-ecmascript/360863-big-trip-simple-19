@@ -108,7 +108,9 @@ export function generatePoints(count) {
     });
   }
 
-  return DATA;
+  return DATA.sort((a,b) =>
+    new Date(a.date_from) - new Date(b.date_from)
+  );
 }
 
 export function generateBlankPoint() {

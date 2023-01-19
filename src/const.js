@@ -10,7 +10,7 @@ const SORTING_TYPES = {
   EVENT: 'event',
   TIME: 'time',
   PRICE: 'price',
-  OFFERS: 'offers'
+  OFFERS: 'offers',
 };
 
 export {POINT_TYPES, POINTS_COUNT, FILTER_TYPE, SORTING_TYPES};

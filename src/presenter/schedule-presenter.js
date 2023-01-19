@@ -5,6 +5,7 @@ import EmptyPointsView from '../view/empty-points-view';
 import SortingView from '../view/sorting-view';
 import PointPresenter from './point-presenter';
 import {updateItem} from '../utils/utils';
+import {SORTING_TYPES} from '../const';
 
 export default class SchedulePresenter {
   #scheduleContainer;
@@ -18,12 +19,16 @@ export default class SchedulePresenter {
   #sortingList;
   #noPointComponent = new EmptyPointsView();
   #scheduleComponent = new ScheduleView();
+  #sortComponent;
   #pointPresenter = new Map();
+  #sourcedSchedulePoints = [];
+  #currentSortType;
 
   constructor({scheduleContainer, DATA_MODEL, SORTING_MODEL}) {
     this.#scheduleContainer = scheduleContainer;
     this.#dataModel = DATA_MODEL;
     this.#sortingModel = SORTING_MODEL;
+    this.#currentSortType = this.#sortingModel.sortingList[0];
   }
 
   init() {
@@ -33,6 +38,7 @@ export default class SchedulePresenter {
     this.#offers = [...this.#dataModel.offers];
     this.#blankPoint = [...this.#dataModel.blankPoint];
     this.#sortingList = [...this.#sortingModel.sortingList];
+    this.#sourcedSchedulePoints = [...this.#dataModel.points];
 
     this.renderBoard();
   }
@@ -47,8 +53,41 @@ export default class SchedulePresenter {
     this.#renderPointsList();
   }
 
+  #handleSortTypeChange = (sortType) => {
+    this.#sortPoints(sortType);
+    this.#clearPoinList();
+    this.#renderPointsList();
+  };
+
+  #sortPoints(sortType) {
+
+    if (sortType === SORTING_TYPES.DAY && this.#currentSortType === SORTING_TYPES.DAY) {
+      sortType = '';
+    }
+
+    switch (sortType) {
+      case SORTING_TYPES.PRICE:
+        if (this.#currentSortType !== SORTING_TYPES.PRICE) {
+          this.#points.sort((a,b) => b.base_price - a.base_price);
+        }
+        break;
+      case SORTING_TYPES.DAY:
+        this.#points.sort((a,b) => new Date(b.date_from) - new Date(a.date_from));
+        break;
+      default:
+        this.#points = [...this.#sourcedSchedulePoints];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
   #renderSort() {
-    render(new SortingView({SORTING: this.#sortingList}), this.#scheduleContainer);
+    this.#sortComponent = new SortingView({
+      SORTING: this.#sortingList,
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
+    render(this.#sortComponent, this.#scheduleContainer);
   }
 
   #renderAddPoint() {
@@ -56,14 +95,14 @@ export default class SchedulePresenter {
   }
 
   #renderPoint({point, offers, destinations, offersByType}) {
-    const POINT_PRESENTER = new PointPresenter({
+    const pointPresenter = new PointPresenter({
       scheduleComponent: this.#scheduleComponent.element,
       onDataChange: this.#handlePointChange,
       onModeChange: this.#handleModeChange,
     });
 
-    POINT_PRESENTER.init(point, offers, destinations, offersByType);
-    this.#pointPresenter.set(point.id, POINT_PRESENTER);
+    pointPresenter.init(point, offers, destinations, offersByType);
+    this.#pointPresenter.set(point.id, pointPresenter);
   }
 
   #renderPointsList() {
@@ -77,10 +116,16 @@ export default class SchedulePresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
+    this.#sourcedSchedulePoints = updateItem(this.#sourcedSchedulePoints, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offers, this.#destinations, this.#offersByType);
   };
 
   #handleModeChange = () => {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
+
+  #clearPoinList() {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
+  }
 }

@@ -1,9 +1,9 @@
-import {SORTING} from '../utils/sorting';
+import {SORTING_TYPES} from '../const';
 
 export function generateSorting() {
-  return Object.entries(SORTING).map(
-    ([sortingName]) => ({
-      name: sortingName,
+  return Object.entries(SORTING_TYPES).map(
+    ([, value]) => ({
+      name: value,
     }),
   );
 }

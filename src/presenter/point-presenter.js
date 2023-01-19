@@ -3,8 +3,8 @@ import {remove, render, replace} from '../framework/render';
 import EditPointView from '../view/edit-point-view';
 
 const MODE = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
+  DEFAULT: 'default',
+  EDITING: 'editing',
 };
 
 export default class PointPresenter {
@@ -31,8 +31,8 @@ export default class PointPresenter {
     this.#destinations = destinations;
     this.#offersByType = offersByType;
 
-    const PREV_POINT_COMPONENT = this.#pointComponent;
-    const PREV_EDIT_POINT_COMPONENT = this.#pointEditComponent;
+    const prevPointComponent = this.#pointComponent;
+    const prevEditPointComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView({
       point: this.#point,
@@ -50,21 +50,21 @@ export default class PointPresenter {
       onCloseClick: this.#handlerOnCloseClick,
     });
 
-    if (PREV_POINT_COMPONENT === null || PREV_EDIT_POINT_COMPONENT === null) {
+    if (prevPointComponent === null || prevEditPointComponent === null) {
       render(this.#pointComponent, this.#scheduleComponent);
       return;
     }
 
     if(this.#mode === MODE.DEFAULT) {
-      replace(this.#pointComponent, PREV_POINT_COMPONENT);
+      replace(this.#pointComponent, prevPointComponent);
     }
 
     if(this.#mode === MODE.EDITING) {
-      replace(this.#pointEditComponent, PREV_EDIT_POINT_COMPONENT);
+      replace(this.#pointEditComponent, prevEditPointComponent);
     }
 
-    remove(PREV_POINT_COMPONENT);
-    remove(PREV_EDIT_POINT_COMPONENT);
+    remove(prevPointComponent);
+    remove(prevEditPointComponent);
   }
 
   destroy() {

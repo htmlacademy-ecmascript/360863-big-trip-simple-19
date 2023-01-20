@@ -5,10 +5,10 @@ import DataModel from './model/points-model';
 import SortingModel from './model/sorting-model';
 import {generateFilter} from './mock/filter';
 
-const header = document.querySelector('.page-header');
-const main = document.querySelector('.page-main');
-const tripControlElements = header.querySelector('.trip-controls__filters');
-const tripElements = main.querySelector('.trip-events');
+const headerElement = document.querySelector('.page-header');
+const mainElement = document.querySelector('.page-main');
+const tripControlElements = headerElement.querySelector('.trip-controls__filters');
+const tripElements = mainElement.querySelector('.trip-events');
 const DATA_MODEL = new DataModel();
 const SORTING_MODEL = new SortingModel();
 const schedulePresenter = new SchedulePresenter({scheduleContainer: tripElements, DATA_MODEL, SORTING_MODEL});

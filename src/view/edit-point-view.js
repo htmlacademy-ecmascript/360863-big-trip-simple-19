@@ -1,12 +1,13 @@
 import {POINT_TYPES} from '../const';
 import dayjs from 'dayjs';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import AbstractView from '../framework/view/abstract-view';
 
-function createTypesTemplate(currentType) {
+function createTypesTemplate(currentType, pointId) {
   return POINT_TYPES.map((type) =>
     `<div class="event__type-item">
-      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+      <input id="event-type-${type}-${pointId}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${pointId}">${type}</label>
     </div>`).join('');
 }
 
@@ -27,11 +28,11 @@ function createOffersTemplate(offersByType, point) {
 }
 
 function createDestinationsTemplate(destinations){
-  return destinations.map((el) => `<option value="${el.name}"></option>`);
+  return destinations.map((el) => `<option value="${el.name}">`).join('');
 }
 
 function createPointEditorTemplate(offers, destinations, point, offersByType) {
-  const typesTemplate = createTypesTemplate(point.type);
+  const typesTemplate = createTypesTemplate(point.type, point.id);
   const pointDestination = destinations.find((el) => el.id === point.destination);
   const timeFrom = dayjs(point.date_from).format('YY/MM/DD HH:mm');
   const timeTo = dayjs(point.date_to).format('YY/MM/DD HH:mm');
@@ -43,27 +44,26 @@ function createPointEditorTemplate(offers, destinations, point, offersByType) {
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-1">
+          <label class="event__type  event__type-btn" for="event-type-toggle-${point.id}">
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${point.type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${point.id}" type="checkbox">
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
                 ${typesTemplate}
-
             </fieldset>
           </div>
         </div>
 
         <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-1">
+          <label class="event__label  event__type-output" for="event-destination-${point.id}">
             ${point.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1">
-          <datalist id="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-${point.id}">
+          <datalist id="destination-list-${point.id}">
             ${destinationsTemplate}
           </datalist>
         </div>
@@ -110,8 +110,8 @@ function createPointEditorTemplate(offers, destinations, point, offersByType) {
   </li>
   `);
 }
-
-export default class EditPointView extends AbstractView {
+/*export default class EditPointView extends AbstractView {*/
+export default class EditPointView extends AbstractStatefulView {
   #offers;
   #destinations;
   #point;
@@ -123,17 +123,24 @@ export default class EditPointView extends AbstractView {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
-    this.#point = point;
+/*    this.#point = point;*/
+    this._state = point;
     this.#offersByType = offersByType;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseClick = onCloseClick;
 
-    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createPointEditorTemplate(this.#offers, this.#destinations, this.#point, this.#offersByType);
+    return createPointEditorTemplate(this.#offers, this.#destinations, /*this.#point,*/ this._state, this.#offersByType);
+  }
+
+  _restoreHandlers() {
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
+    this.element.querySelectorAll('.event__type-input').forEach((el) => {el.addEventListener('click', this.#typeChangeHandler)});
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationChangeHandler);
   }
 
   #formSubmitHandler = (evt) => {
@@ -145,4 +152,20 @@ export default class EditPointView extends AbstractView {
     evt.preventDefault();
     this.#handleCloseClick(this.#point);
   };
+
+  #typeChangeHandler = (evt) => {
+    this._state.type = evt.target.value;
+    this.updateElement({
+      type: this._state.type,
+    })
+  }
+
+  #destinationChangeHandler = (evt) => {
+    if(this.#destinations.find((el) => el.name === evt.target.value)) {
+      this._state.destination = this.#destinations.find((el) => el.name === evt.target.value).id;
+      this.updateElement({
+        destination: this._state.destination,
+      })
+    }
+  }
 }

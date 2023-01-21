@@ -1,12 +1,12 @@
 import {POINT_TYPES} from '../const';
 import dayjs from 'dayjs';
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
-function createTypesTemplate(currentType) {
+function createTypesTemplate(currentType, pointId) {
   return POINT_TYPES.map((type) =>
     `<div class="event__type-item">
-      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+      <input id="event-type-${type}-${pointId}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${pointId}">${type}</label>
     </div>`).join('');
 }
 
@@ -17,7 +17,7 @@ function createOffersTemplate(offersByType, point) {
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${point.id}" type="checkbox" name="event-offer-${offer.title}"
       ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''}>
-      <label class="event__offer-label" for="event-offer-${offer.title}-1">
+      <label class="event__offer-label" for="event-offer-${offer.title}-${point.id}">
         <span class="event__offer-title">Add ${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
@@ -39,7 +39,7 @@ function createDestinationsTemplate(destinations){
 }
 
 function getAddPointTemplate(offers, destinations, point, offersByType) {
-  const typesTemplate = createTypesTemplate(point.type);
+  const typesTemplate = createTypesTemplate(point.type, point.id);
   const pointDestination = destinations.find((el) => el.id === point.destination);
   const timeFrom = dayjs(point.date_from).format('YY/MM/DD HH:mm');
   const timeTo = dayjs(point.date_to).format('YY/MM/DD HH:mm');
@@ -63,7 +63,6 @@ function getAddPointTemplate(offers, destinations, point, offersByType) {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
                 ${typesTemplate}
-
             </fieldset>
           </div>
 
@@ -125,21 +124,78 @@ function getAddPointTemplate(offers, destinations, point, offersByType) {
   `);
 }
 
-export default class AddPointView extends AbstractView {
+export default class AddPointView extends AbstractStatefulView {
   #offers;
   #destinations;
-  #point;
   #offersByType;
 
   constructor({offers, destinations, point, offersByType}) {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
-    this.#point = point;
+    this._state = point;
     this.#offersByType = offersByType;
+
+    this._restoreHandlers();
   }
 
   get template() {
-    return getAddPointTemplate(this.#offers, this.#destinations, this.#point, this.#offersByType);
+    return getAddPointTemplate(this.#offers, this.#destinations, this._state, this.#offersByType);
   }
+
+  _restoreHandlers() {
+    this.element.querySelectorAll('.event__type-input').forEach((el) => {el.addEventListener('click', this.#typeChangeHandler);});
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+    this.element.querySelector('input[name="event-start-time"]').addEventListener('change', this.#startTimeChangeHandler);
+    this.element.querySelector('input[name="event-end-time"]').addEventListener('change', this.#endTimeChangeHandler);
+    this.element.querySelectorAll('.event__offer-checkbox').forEach((el) => el.addEventListener('click', this.#offersChangeHandler));
+  }
+
+  #typeChangeHandler = (evt) => {
+    this._state.type = evt.target.value;
+    this.updateElement({
+      type: this._state.type,
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    if(this.#destinations.find((el) => el.name === evt.target.value)) {
+      this._state.destination = this.#destinations.find((el) => el.name === evt.target.value).id;
+      this.updateElement({
+        destination: this._state.destination,
+      });
+    }
+  };
+
+  #priceChangeHandler = (evt) => {
+    this._state.base_price = evt.target.value;
+    this.updateElement({
+      base_price: this._state.base_price,
+    });
+  };
+
+  #startTimeChangeHandler = (evt) => {
+    const dateValue = `20${evt.target.value}`; /*TODO:Не смог решить по другому, получилось странно*/
+    const data = new Date(dateValue);
+    this._state.date_from = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
+    this.updateElement({
+      date_from: this._state.date_from,
+    });
+  };
+
+  #endTimeChangeHandler = (evt) => {
+    const dateValue = `20${evt.target.value}`; /*TODO:Не смог решить по другому, получилось странно*/
+    const data = new Date(dateValue);
+    this._state.date_to = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
+    this.updateElement({
+      date_to: this._state.date_to,
+    });
+  };
+
+  #offersChangeHandler = () => {
+    const offersIdArray = [];
+    this.element.querySelectorAll('.event__offer-checkbox:checked').forEach((el) => {offersIdArray.push(el.dataset.offerId);});
+    this._state.offers = offersIdArray;
+  };
 }

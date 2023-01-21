@@ -30,7 +30,15 @@ const OFFERS_TITLES = [
   'Switch to comfort',
   'Rent a car',
   'Add breakfast',
-  'Book tickets'
+  'Book tickets',
+  '11111111111111',
+  '22222222222222',
+  '333333333333333',
+  '4444444444444',
+  '555555555555',
+  '666666666666',
+  '77777777777',
+  '88888888888888',
 ];
 
 const DAYS_PLUS_MINIMUM = 3;

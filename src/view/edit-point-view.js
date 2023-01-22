@@ -123,7 +123,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#offers = offers;
     this.#destinations = destinations;
     this._state = point;
-    this.#point = point;
+    this.#point = Object.assign({}, point);
     this.#offersByType = offersByType;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseClick = onCloseClick;
@@ -136,7 +136,8 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   reset(point) {
-    this.updateElement(EditPointView.parsePointToState(point));
+    point = this.#point;
+    this.updateElement(point);
   }
 
   _restoreHandlers() {
@@ -152,12 +153,12 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#point);
+    this.#handleFormSubmit(this._state);
   };
 
   #formCloseHandler = (evt) => {
     evt.preventDefault();
-    this.#handleCloseClick(this.#point);
+    this.#handleCloseClick(this._state);
   };
 
   #typeChangeHandler = (evt) => {
@@ -213,7 +214,6 @@ export default class EditPointView extends AbstractStatefulView {
     this._state.offers = offersIdArray;
   };
 
-  static parsePointToState(point) {
-    return {...point};
-  }
 }
+
+/*TODO: как перевести переменные date_to в кэмэл кейс*/

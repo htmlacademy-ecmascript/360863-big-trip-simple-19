@@ -1,5 +1,6 @@
 import {humanizeDate, humanizeTime} from '../utils/utils';
 import AbstractView from '../framework/view/abstract-view';
+import dayjs from 'dayjs';
 
 function getOffersTemplate(point, offers) {
 
@@ -15,8 +16,8 @@ function getOffersTemplate(point, offers) {
 function getPointTemplate(point, destinations, offers) {
   const pointDestination = destinations.find((el) => el.id === point.destination);
   const dateFrom = humanizeDate(point.date_from);
-  const timeFrom = humanizeTime(point.date_from);
-  const timeTo = humanizeTime(point.date_to);
+  const timeFrom = dayjs(point.date_from).format('HH:mm');
+  const timeTo = dayjs(point.date_to).format('HH:mm');
   const offersList = getOffersTemplate(point, offers);
 
   return (`

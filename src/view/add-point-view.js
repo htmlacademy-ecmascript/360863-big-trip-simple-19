@@ -128,12 +128,14 @@ export default class AddPointView extends AbstractStatefulView {
   #offers;
   #destinations;
   #offersByType;
+  #point;
 
   constructor({offers, destinations, point, offersByType}) {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
     this._state = point;
+    this.#point = Object.assign({}, point);
     this.#offersByType = offersByType;
 
     this._restoreHandlers();
@@ -150,6 +152,12 @@ export default class AddPointView extends AbstractStatefulView {
     this.element.querySelector('input[name="event-start-time"]').addEventListener('change', this.#startTimeChangeHandler);
     this.element.querySelector('input[name="event-end-time"]').addEventListener('change', this.#endTimeChangeHandler);
     this.element.querySelectorAll('.event__offer-checkbox').forEach((el) => el.addEventListener('click', this.#offersChangeHandler));
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#reset)
+  }
+
+  #reset = () => {
+    this._state = this.#point;
+    this.updateElement(this._state);
   }
 
   #typeChangeHandler = (evt) => {

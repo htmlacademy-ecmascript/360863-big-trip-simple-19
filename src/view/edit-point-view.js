@@ -33,8 +33,8 @@ function createDestinationsTemplate(destinations){
 function createPointEditorTemplate(offers, destinations, point, offersByType) {
   const typesTemplate = createTypesTemplate(point.type, point.id);
   const pointDestination = destinations.find((el) => el.id === point.destination);
-  const timeFrom = dayjs(point.date_from).format('YY/MM/DD HH:mm');
-  const timeTo = dayjs(point.date_to).format('YY/MM/DD HH:mm');
+  const timeFrom = dayjs(point.dateFrom).format('YY/MM/DD HH:mm');
+  const timeTo = dayjs(point.dateTo).format('YY/MM/DD HH:mm');
   const offersTemplate = createOffersTemplate(offersByType, point);
   const destinationsTemplate = createDestinationsTemplate(destinations);
 
@@ -80,7 +80,7 @@ function createPointEditorTemplate(offers, destinations, point, offersByType) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.base_price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -181,9 +181,9 @@ export default class EditPointView extends AbstractStatefulView {
 
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
-    this._state.base_price = evt.target.value;
+    this._state.basePrice = evt.target.value;
     this.updateElement({
-      base_price: this._state.base_price,
+      basePrice: this._state.basePrice,
     });
   };
 
@@ -191,9 +191,9 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     const dateValue = `20${evt.target.value}`; /*TODO:Не смог решить по другому, получилось странно*/
     const data = new Date(dateValue);
-    this._state.date_from = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
+    this._state.dateFrom = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
     this.updateElement({
-      date_from: this._state.date_from,
+      dateFrom: this._state.dateFrom,
     });
   };
 
@@ -201,9 +201,9 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     const dateValue = `20${evt.target.value}`; /*TODO:Не смог решить по другому, получилось странно*/
     const data = new Date(dateValue);
-    this._state.date_to = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
+    this._state.dateTo = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
     this.updateElement({
-      date_to: this._state.date_to,
+      dateTo: this._state.dateTo,
     });
   };
 
@@ -215,5 +215,3 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
 }
-
-/*TODO: как перевести переменные date_to в кэмэл кейс*/

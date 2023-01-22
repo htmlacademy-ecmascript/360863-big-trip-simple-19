@@ -1,9 +1,8 @@
-import {humanizeDate, humanizeTime} from '../utils/utils';
 import AbstractView from '../framework/view/abstract-view';
+import {humanizeDate} from '../utils/utils';
 import dayjs from 'dayjs';
 
 function getOffersTemplate(point, offers) {
-
   return offers.filter((offer) => point.offers.includes(offer.id)).map((el) =>
     `<li class="event__offer">
       <span class="event__offer-title">${el.title}</span>
@@ -15,9 +14,9 @@ function getOffersTemplate(point, offers) {
 
 function getPointTemplate(point, destinations, offers) {
   const pointDestination = destinations.find((el) => el.id === point.destination);
-  const dateFrom = humanizeDate(point.date_from);
-  const timeFrom = dayjs(point.date_from).format('HH:mm');
-  const timeTo = dayjs(point.date_to).format('HH:mm');
+  const dateFrom = humanizeDate(point.dateFrom);
+  const timeFrom = dayjs(point.dateFrom).format('HH:mm');
+  const timeTo = dayjs(point.dateTo).format('HH:mm');
   const offersList = getOffersTemplate(point, offers);
 
   return (`
@@ -30,13 +29,13 @@ function getPointTemplate(point, destinations, offers) {
         <h3 class="event__title">${point.type} ${pointDestination.name}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${point.date_from}">${timeFrom}</time>
+            <time class="event__start-time" datetime="${point.dateFrom}">${timeFrom}</time>
             &mdash;
-            <time class="event__end-time" datetime="${point.date_to}">${timeTo}</time>
+            <time class="event__end-time" datetime="${point.dateTo}">${timeTo}</time>
           </p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${point.base_price}</span>
+          &euro;&nbsp;<span class="event__price-value">${point.basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">

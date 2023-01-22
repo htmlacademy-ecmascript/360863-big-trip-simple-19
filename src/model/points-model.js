@@ -6,6 +6,7 @@ import {
   generateOffersByType,
   generatePoints,
 } from '../mock/points';
+import {renameProperty} from '../utils/utils';
 
 const OFFERS_COUNT = 5;
 const DESTINATIONS_COUNT = 5;
@@ -16,7 +17,9 @@ export default class DataModel {
   #destinations = generateDestinations(DESTINATIONS_COUNT);
   #offers = generateOffers(OFFERS_COUNT);
   #points = generatePoints(POINTS_COUNT);
+  #formatedPoints = this.#formatPointKeys(this.#points);
   #blankPoint = generateBlankPoint();
+  #formatedBlankPoints = this.#formatPointKeys(this.#blankPoint);
 
   get offersByType() {
     return this.#offersByType;
@@ -35,10 +38,20 @@ export default class DataModel {
   }
 
   get points() {
-    return this.#points;
+    return this.#formatedPoints;
   }
 
   get blankPoint() {
-    return this.#blankPoint;
+    return this.#formatedBlankPoints;
+  }
+
+  #formatPointKeys(points) {
+    points.forEach((point) => {
+      renameProperty(point, 'base_price', 'basePrice');
+      renameProperty(point, 'date_from', 'dateFrom');
+      renameProperty(point, 'date_to', 'dateTo');
+    });
+
+    return points;
   }
 }

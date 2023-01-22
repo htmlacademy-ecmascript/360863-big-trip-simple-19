@@ -68,11 +68,11 @@ export default class SchedulePresenter {
     switch (sortType) {
       case SORTING_TYPES.PRICE:
         if (this.#currentSortType !== SORTING_TYPES.PRICE) {
-          this.#points.sort((a,b) => b.base_price - a.base_price);
+          this.#points.sort((a,b) => b.basePrice - a.basePrice);
         }
         break;
       case SORTING_TYPES.DAY:
-        this.#points.sort((a,b) => new Date(b.date_from) - new Date(a.date_from));
+        this.#points.sort((a,b) => new Date(b.dateFrom) - new Date(a.dateFrom));
         break;
       default:
         this.#points = [...this.#sourcedSchedulePoints];

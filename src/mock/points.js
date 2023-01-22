@@ -7,7 +7,10 @@ const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-i
 const DESTINATIONS_DESCRIPTIONS = [
   'Aliquam id orci ut lectus varius viverra',
   'tortor ac porta dapibus',
-  'non porta ligula feugiat eget'
+  'non porta ligula feugiat eget',
+  'sdf sdg sg fdg s sd dfs fd',
+  'sdsffsfsdf sdf sfsdf sdf sdf sd f',
+  'llllllllllllkuuiutuutyu',
 ];
 const CITY_NAMES = [
   'Chamonix',
@@ -27,7 +30,15 @@ const OFFERS_TITLES = [
   'Switch to comfort',
   'Rent a car',
   'Add breakfast',
-  'Book tickets'
+  'Book tickets',
+  '11111111111111',
+  '22222222222222',
+  '333333333333333',
+  '4444444444444',
+  '555555555555',
+  '666666666666',
+  '77777777777',
+  '88888888888888',
 ];
 
 const DAYS_PLUS_MINIMUM = 3;
@@ -87,7 +98,7 @@ const OFFERS_BY_TYPE = generateOffersByType();
 export function generatePoints(count) {
   const DATA = [];
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 1; i < count; i++) {
     const POINT_TYPE = getRandomArrayElement(POINT_TYPES);
     const ID = i;
     const HOUR_VALUE_FROM = getRandomInt(HOURS_PLUS_MINIMUM, HOURS_PLUS_MAXIMUM);
@@ -123,7 +134,7 @@ export function generateBlankPoint() {
     'date_from': dayjs().add(HOUR_VALUE_FROM, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
     'date_to': dayjs().add(DAYS_VALUE_TO, 'day').add(HOURS_VALUE_TO, 'hour').format('YYYY-MM-DDTHH:mm:ss'),
     'destination': DESTINATIONS[getRandomInt(0, (DESTINATIONS.length - 1))].id,
-    'id': null,
+    'id': 0,
     'offers': [getRandomArrayElement(OFFERS_BY_TYPE
       .find((el) => el.type === POINT_TYPE).offers
       .map((offer) => (offer.id)))],

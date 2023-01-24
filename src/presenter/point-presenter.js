@@ -1,6 +1,7 @@
 import PointView from '../view/point-view';
 import {remove, render, replace} from '../framework/render';
 import EditPointView from '../view/edit-point-view';
+import {USER_ACTION, UPDATE_TYPE} from '../const';
 
 const MODE = {
   DEFAULT: 'default',
@@ -106,7 +107,11 @@ export default class PointPresenter {
   };
 
   #handlerFormSubmit = (point) => {
-    this.#handleDataChange(point);
+    this.#handleDataChange(
+      USER_ACTION.UPDATE_POINT,
+      UPDATE_TYPE.MINOR,
+      point,
+    );
     this.#replaceFormToPoint();
   };
 

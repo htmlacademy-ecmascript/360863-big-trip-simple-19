@@ -3,6 +3,9 @@ import {humanizeDate} from '../utils/utils';
 import dayjs from 'dayjs';
 
 function getOffersTemplate(point, offers) {
+  point.offers.forEach((el) => +el);
+  console.log(offers, point.offers);
+
   return offers.filter((offer) => point.offers.includes(offer.id)).map((el) =>
     `<li class="event__offer">
       <span class="event__offer-title">${el.title}</span>

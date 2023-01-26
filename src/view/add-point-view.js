@@ -164,6 +164,20 @@ export default class AddPointView extends AbstractStatefulView {
     this.updateElement(this._state);
   };
 
+  removeElement() {
+    super.removeElement();
+
+    if(this.#datepickerFrom){
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if(this.#datepickerTo){
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
   #typeChangeHandler = (evt) => {
     this._state.type = evt.target.value;
     this.updateElement({

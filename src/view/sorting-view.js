@@ -39,7 +39,7 @@ export default class SortingView extends AbstractView {
   }
 
   get template() {
-    return createSortingTemplate(this.#sorting, this.#currentSortType);
+    return createSortingTemplate(this.#sorting);
   }
 
   #sortTypeChangeHandler = (evt) => {

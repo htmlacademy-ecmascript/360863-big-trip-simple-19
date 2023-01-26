@@ -64,24 +64,13 @@ export default class SchedulePresenter {
     this.#renderPointsList();
   }
 
-  #clearBoard({resetRenderedPointCount = false, resetSortType = false} = {}) {
-    const pointCount = this.points.length;
-
+  #clearBoard(resetSortType = false) {
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
     remove(this.#noPointComponent);
     remove(this.#addPointComponent);
-
-/*    if (resetRenderedPointCount) {
-      this.#renderedPointCount = TASK_COUNT_PER_STEP;
-    } else {
-      // На случай, если перерисовка доски вызвана
-      // уменьшением количества задач (например, удаление или перенос в архив)
-      // нужно скорректировать число показанных задач
-      this.#renderedPointCount = Math.min(pointCount, this.#renderedPointCount);
-    }*/
 
     if (resetSortType) {
       this.#currentSortType = this.#defaulSort;
@@ -120,9 +109,16 @@ export default class SchedulePresenter {
     this.#pointPresenter.set(point.id, pointPresenter);
   }
 
+  /*TODO: удалить #renderPointsList и перенести логику в #renderBoard*/
   #renderPointsList() {
     render(this.#scheduleComponent, this.#scheduleContainer);
     this.points.forEach((point) => this.#renderPoint({point: point, offers: this.#offers, destinations: this.#destinations, offersByType: this.#offersByType}));
+  }
+
+  /*TODO: удалить #clearPointList и перенести логику в #clearBoard*/
+  #clearPointList() {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
   }
 
   #renderNoPoints() {
@@ -132,11 +128,6 @@ export default class SchedulePresenter {
   #handleModeChange = () => {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
-
-  #clearPointList() {
-    this.#pointPresenter.forEach((presenter) => presenter.destroy());
-    this.#pointPresenter.clear();
-  }
 
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
@@ -155,13 +146,18 @@ export default class SchedulePresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UPDATE_TYPE.PATCH:
+        console.log(1)
         this.#pointPresenter.get(data.id).init(data, this.#offers, this.#destinations, this.#offersByType);
         break;
       case UPDATE_TYPE.MINOR:
+        console.log(2)
         this.#clearBoard();
         this.#renderBoard();
         break;
       case UPDATE_TYPE.MAJOR:
+        console.log(3)
+        this.#clearBoard();
+        this.#renderBoard();
         break;
     }
   }

@@ -72,15 +72,15 @@ export default class DataModel extends Observable {
   }
 
   deletePoint(updateType, update) {
-    const index = this.#points.findIndex((point) => point.id === update.id);
+    const index = this.#formatedPoints.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting point');
     }
 
-    this.#points = [
-      ...this.#points.slice(0, index),
-      ...this.#points.slice(index + 1),
+    this.#formatedPoints = [
+      ...this.#formatedPoints.slice(0, index),
+      ...this.#formatedPoints.slice(index + 1),
     ];
 
     this._notify(updateType);

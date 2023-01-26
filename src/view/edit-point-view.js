@@ -17,9 +17,9 @@ function createOffersTemplate(offersByType, point) {
 
   return offers.map((offer) =>
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${point.id}" type="checkbox" name="event-offer-${offer.title}"
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.replace(/\s+/g, '-').toLowerCase()}-${point.id}" type="checkbox" name="event-offer-${offer.title}"
       ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''} data-offer-id="${offer.id}">
-      <label class="event__offer-label" for="event-offer-${offer.title}-${point.id}">
+      <label class="event__offer-label" for="event-offer-${offer.title.replace(/\s+/g, '-').toLowerCase()}-${point.id}">
         <span class="event__offer-title">Add ${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
@@ -121,8 +121,9 @@ export default class EditPointView extends AbstractStatefulView {
   #handleCloseClick;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #handleDeleteClick;
 
-  constructor({offers, destinations, point, offersByType, onFormSubmit, onCloseClick}) {
+  constructor({offers, destinations, point, offersByType, onFormSubmit, onCloseClick, onDeleteClick}) {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
@@ -131,6 +132,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#offersByType = offersByType;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseClick = onCloseClick;
+    this.#handleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
   }
@@ -151,6 +153,11 @@ export default class EditPointView extends AbstractStatefulView {
       this.#datepickerFrom.destroy();
       this.#datepickerFrom = null;
     }
+
+    if(this.#datepickerTo){
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
   }
 
   _restoreHandlers() {
@@ -162,6 +169,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('input[name="event-start-time"]').addEventListener('change', this.#startTimeChangeHandler);
     this.element.querySelector('input[name="event-end-time"]').addEventListener('change', this.#endTimeChangeHandler);
     this.element.querySelectorAll('.event__offer-checkbox').forEach((el) => el.addEventListener('click', this.#offersChangeHandler));
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteHandler);
     this.#setDatepickers();
   }
 
@@ -197,7 +205,7 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     this._state.basePrice = evt.target.value;
     this.updateElement({
-      basePrice: this._state.basePrice,
+      basePrice: +this._state.basePrice,
     });
   };
 
@@ -221,10 +229,9 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-  #offersChangeHandler = (evt) => {
-    evt.preventDefault();
+  #offersChangeHandler = () => {
     const offersIdArray = [];
-    this.element.querySelectorAll('.event__offer-checkbox:checked').forEach((el) => {offersIdArray.push(el.dataset.offerId);});
+    this.element.querySelectorAll('.event__offer-checkbox:checked').forEach((el) => {offersIdArray.push(+el.dataset.offerId);});
     this._state.offers = offersIdArray;
   };
 
@@ -265,4 +272,9 @@ export default class EditPointView extends AbstractStatefulView {
       dateTo: userDate,
     });
   };
+
+  #formDeleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(this.#point);
+  }
 }

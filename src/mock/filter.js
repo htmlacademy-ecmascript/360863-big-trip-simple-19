@@ -1,3 +1,4 @@
+/*
 import {FILTER} from '../utils/filter';
 
 export function generateFilter() {
@@ -7,3 +8,4 @@ export function generateFilter() {
     }),
   );
 }
+*/

@@ -8,6 +8,7 @@ import {SORTING_TYPES, UPDATE_TYPE, USER_ACTION} from '../const';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
+import {FILTER} from '../utils/filter';
 
 export default class SchedulePresenter {
   #scheduleContainer;
@@ -25,27 +26,36 @@ export default class SchedulePresenter {
   #pointPresenter = new Map();
   #currentSortType;
   #defaulSort;
+  #filterModel;
 
-  constructor({scheduleContainer, DATA_MODEL, SORTING_MODEL}) {
+  constructor({scheduleContainer, filterModel, DATA_MODEL, SORTING_MODEL}) {
     this.#scheduleContainer = scheduleContainer;
     this.#dataModel = DATA_MODEL;
     this.#sortingModel = SORTING_MODEL;
     this.#currentSortType = SORTING_TYPES.DEFAULT;
+    this.#filterModel = filterModel;
 
     this.#dataModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    const filterType = this.#filterModel.filter;
+    const points = [...this.#dataModel.points];
+    const filteredPoints = FILTER[filterType](points);
+
+    console.log(this.#currentSortType)
+
     switch (this.#currentSortType) {
       case SORTING_TYPES.DEFAULT:
-        return [...this.#dataModel.points].sort((a,b) => dayjs(a.dateFrom, 'DD-MM-YYTHH:mm:ss') - dayjs(b.dateFrom, 'DD-MM-YYTHH:mm:ss'));
+        return filteredPoints.sort((a,b) => dayjs(a.dateFrom, 'DD-MM-YYTHH:mm:ss') - dayjs(b.dateFrom, 'DD-MM-YYTHH:mm:ss'));
       case SORTING_TYPES.PRICE:
-        return [...this.#dataModel.points].sort((a,b) => b.basePrice - a.basePrice);
+        return filteredPoints.sort((a,b) => b.basePrice - a.basePrice);
       case SORTING_TYPES.DAY:
-        return [...this.#dataModel.points].sort((a,b) => dayjs(b.dateFrom, 'DD-MM-YYTHH:mm:ss') - dayjs(a.dateFrom, 'DD-MM-YYTHH:mm:ss'));
+        return filteredPoints.sort((a,b) => dayjs(b.dateFrom, 'DD-MM-YYTHH:mm:ss') - dayjs(a.dateFrom, 'DD-MM-YYTHH:mm:ss'));
     }
 
-    return this.#dataModel.points;
+    return filteredPoints;
   }
 
   init() {
@@ -77,7 +87,7 @@ export default class SchedulePresenter {
     remove(this.#addPointComponent);
 
     if (resetSortType) {
-      this.#currentSortType = this.#defaulSort;
+      this.#currentSortType = SORTING_TYPES.DEFAULT;
     }
   }
 
@@ -164,7 +174,7 @@ export default class SchedulePresenter {
         break;
       case UPDATE_TYPE.MAJOR:
         console.log(3)
-        this.#clearBoard();
+        this.#clearBoard(true);
         this.#renderBoard();
         break;
     }

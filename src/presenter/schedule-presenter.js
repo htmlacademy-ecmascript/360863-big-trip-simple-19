@@ -5,6 +5,9 @@ import EmptyPointsView from '../view/empty-points-view';
 import SortingView from '../view/sorting-view';
 import PointPresenter from './point-presenter';
 import {SORTING_TYPES, UPDATE_TYPE, USER_ACTION} from '../const';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 
 export default class SchedulePresenter {
   #scheduleContainer;
@@ -32,7 +35,7 @@ export default class SchedulePresenter {
     this.#dataModel.addObserver(this.#handleModelEvent);
   }
 
-  get points() {
+/*  get points() {
     switch (this.#currentSortType) {
       case SORTING_TYPES.DEFAULT:
         return [...this.#dataModel.points].sort((a,b) => new Date(a.dateFrom) - new Date(b.dateFrom));
@@ -40,6 +43,19 @@ export default class SchedulePresenter {
         return [...this.#dataModel.points].sort((a,b) => b.basePrice - a.basePrice);
       case SORTING_TYPES.DAY:
         return [...this.#dataModel.points].sort((a,b) => new Date(b.dateFrom) - new Date(a.dateFrom));
+    }
+
+    return this.#dataModel.points;
+  }*/
+
+  get points() {
+    switch (this.#currentSortType) {
+      case SORTING_TYPES.DEFAULT:
+        return [...this.#dataModel.points].sort((a,b) => dayjs(a.dateFrom, 'DD-MM-YYTHH:mm:ss') - dayjs(b.dateFrom, 'DD-MM-YYTHH:mm:ss'));
+      case SORTING_TYPES.PRICE:
+        return [...this.#dataModel.points].sort((a,b) => b.basePrice - a.basePrice);
+      case SORTING_TYPES.DAY:
+        return [...this.#dataModel.points].sort((a,b) => dayjs(b.dateFrom, 'DD-MM-YYTHH:mm:ss') - dayjs(a.dateFrom, 'DD-MM-YYTHH:mm:ss'));
     }
 
     return this.#dataModel.points;

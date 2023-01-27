@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 
 function createTypesTemplate(currentType, pointId) {
   return POINT_TYPES.map((type) =>
@@ -35,8 +37,8 @@ function createDestinationsTemplate(destinations){
 function createPointEditorTemplate(offers, destinations, point, offersByType) {
   const typesTemplate = createTypesTemplate(point.type, point.id);
   const pointDestination = destinations.find((el) => el.id === point.destination);
-  const timeFrom = dayjs(point.dateFrom).format('YY/MM/DD HH:mm');
-  const timeTo = dayjs(point.dateTo).format('YY/MM/DD HH:mm');
+  const timeFrom = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss').format('DD/MM/YY HH:mm');
+  const timeTo = dayjs(point.dateTo, 'DD-MM-YYTHH:mm:ss').format('DD/MM/YY HH:mm');
   const offersTemplate = createOffersTemplate(offersByType, point);
   const destinationsTemplate = createDestinationsTemplate(destinations);
 
@@ -211,9 +213,8 @@ export default class EditPointView extends AbstractStatefulView {
 
   #startTimeChangeHandler = (evt) => {
     evt.preventDefault();
-    const dateValue = `20${evt.target.value}`;
-    const data = new Date(dateValue);
-    this._state.dateFrom = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
+    const dateValue = `${evt.target.value}`;
+    this._state.dateFrom = dayjs(dateValue, 'DD/MM/YY HH:mm').format('DD-MM-YYTHH:mm:ss');
     this.updateElement({
       dateFrom: this._state.dateFrom,
     });
@@ -221,9 +222,8 @@ export default class EditPointView extends AbstractStatefulView {
 
   #endTimeChangeHandler = (evt) => {
     evt.preventDefault();
-    const dateValue = `20${evt.target.value}`;
-    const data = new Date(dateValue);
-    this._state.dateTo = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
+    const dateValue = `${evt.target.value}`;
+    this._state.dateTo = dayjs(dateValue, 'DD/MM/YY HH:mm').format('DD-MM-YYTHH:mm:ss');
     this.updateElement({
       dateTo: this._state.dateTo,
     });
@@ -240,7 +240,7 @@ export default class EditPointView extends AbstractStatefulView {
       this.#datepickerFrom = flatpickr(
         this.element.querySelector(`#event-start-time-${this._state.id}`),
         {
-          dateFormat: 'y/m/d H:i',
+          dateFormat: 'd/m/y H:i',
           defaultDate: this._state.id.dateFrom,
           enableTime: true,
           onChange: this.#dateFromChangeHandler,
@@ -252,7 +252,7 @@ export default class EditPointView extends AbstractStatefulView {
       this.#datepickerTo = flatpickr(
         this.element.querySelector(`#event-end-time-${this._state.id}`),
         {
-          dateFormat: 'y/m/d H:i',
+          dateFormat: 'd/m/y H:i',
           defaultDate: this._state.id.dateTo,
           enableTime: true,
           onChange: this.#dateToChangeHandler,

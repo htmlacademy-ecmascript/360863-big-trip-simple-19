@@ -27,15 +27,14 @@ export default class SchedulePresenter {
     this.#scheduleContainer = scheduleContainer;
     this.#dataModel = DATA_MODEL;
     this.#sortingModel = SORTING_MODEL;
-    this.#defaulSort = this.#sortingModel.sortingList[0];
-    this.#currentSortType = this.#defaulSort;
+    this.#currentSortType = SORTING_TYPES.DEFAULT;
 
     this.#dataModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
     switch (this.#currentSortType) {
-      case this.#defaulSort:
+      case SORTING_TYPES.DEFAULT:
         return [...this.#dataModel.points].sort((a,b) => new Date(a.dateFrom) - new Date(b.dateFrom));
       case SORTING_TYPES.PRICE:
         return [...this.#dataModel.points].sort((a,b) => b.basePrice - a.basePrice);
@@ -80,6 +79,16 @@ export default class SchedulePresenter {
   }
 
   #handleSortTypeChange = (sortType) => {
+    if(this.#currentSortType === sortType && this.#currentSortType === SORTING_TYPES.DAY) {
+      this.#currentSortType = SORTING_TYPES.DEFAULT
+      this.#clearBoard();
+      this.#renderBoard();
+      return;
+    }
+
+/*    if(this.#currentSortType === sortType && this.#currentSortType !== SORTING_TYPES.DAY) {
+      return;
+    }*/
 
     if(this.#currentSortType === sortType) {
       return;

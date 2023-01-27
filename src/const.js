@@ -11,6 +11,7 @@ const SORTING_TYPES = {
   TIME: 'time',
   PRICE: 'price',
   OFFERS: 'offers',
+  DEFAULT: 'default',
 };
 
 const USER_ACTION = {

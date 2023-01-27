@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
+import {SORTING_TYPES} from '../const';
 
 function createSortingItemTemplate(sorting, currentSortType) {
   const {name} = sorting;
@@ -14,6 +15,7 @@ function createSortingItemTemplate(sorting, currentSortType) {
 function createSortingTemplate(sortingItems, currentSortType) {
 
   const sortingItemTemplate = sortingItems
+    .filter((item) => item.name !== SORTING_TYPES.DEFAULT)
     .map((sorting, index) => createSortingItemTemplate(sorting, currentSortType, index === 0))
     .join('');
 

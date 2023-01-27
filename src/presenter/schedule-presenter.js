@@ -4,7 +4,7 @@ import {render, RenderPosition, remove} from '../framework/render.js';
 import EmptyPointsView from '../view/empty-points-view';
 import SortingView from '../view/sorting-view';
 import PointPresenter from './point-presenter';
-import {SORTING_TYPES, UPDATE_TYPE, USER_ACTION} from '../const';
+import {SORTING_TYPES, UPDATE_TYPE, USER_ACTION, FILTER_TYPE} from '../const';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
@@ -19,14 +19,15 @@ export default class SchedulePresenter {
   #offers;
   #blankPoint;
   #sortingList;
-  #noPointComponent = new EmptyPointsView();
+  //#noPointComponent = new EmptyPointsView();
+  #noPointComponent = null;
   #scheduleComponent = new ScheduleView();
   #sortComponent;
   #addPointComponent;
   #pointPresenter = new Map();
   #currentSortType;
-  #defaulSort;
   #filterModel;
+  #filterType = FILTER_TYPE.EVERYTHING;
 
   constructor({scheduleContainer, filterModel, DATA_MODEL, SORTING_MODEL}) {
     this.#scheduleContainer = scheduleContainer;
@@ -40,11 +41,11 @@ export default class SchedulePresenter {
   }
 
   get points() {
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
+    //const filterType = this.#filterModel.filter;
     const points = [...this.#dataModel.points];
-    const filteredPoints = FILTER[filterType](points);
-
-    console.log(this.#currentSortType)
+    //const filteredPoints = FILTER[filterType](points);
+    const filteredPoints = FILTER[this.#filterType](points);
 
     switch (this.#currentSortType) {
       case SORTING_TYPES.DEFAULT:
@@ -83,7 +84,10 @@ export default class SchedulePresenter {
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
-    remove(this.#noPointComponent);
+    //remove(this.#noPointComponent);
+    if(this.#noPointComponent) {
+      remove(this.#noPointComponent);
+    }
     remove(this.#addPointComponent);
 
     if (resetSortType) {
@@ -140,6 +144,10 @@ export default class SchedulePresenter {
   }
 
   #renderNoPoints() {
+    this.#noPointComponent = new EmptyPointsView({
+      filterType: this.#filterType
+    })
+
     render(this.#noPointComponent, this.#scheduleComponent.element, RenderPosition.AFTERBEGIN);
   }
 

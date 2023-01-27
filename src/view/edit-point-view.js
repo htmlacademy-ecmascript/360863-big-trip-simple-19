@@ -211,7 +211,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #startTimeChangeHandler = (evt) => {
     evt.preventDefault();
-    const dateValue = `20${evt.target.value}`; /*TODO:Не смог решить по другому, получилось странно*/
+    const dateValue = `20${evt.target.value}`;
     const data = new Date(dateValue);
     this._state.dateFrom = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
     this.updateElement({
@@ -221,7 +221,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #endTimeChangeHandler = (evt) => {
     evt.preventDefault();
-    const dateValue = `20${evt.target.value}`; /*TODO:Не смог решить по другому, получилось странно*/
+    const dateValue = `20${evt.target.value}`;
     const data = new Date(dateValue);
     this._state.dateTo = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
     this.updateElement({

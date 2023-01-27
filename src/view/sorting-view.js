@@ -1,20 +1,20 @@
 import AbstractView from '../framework/view/abstract-view';
 
-function createSortingItemTemplate(sorting, isChecked) {
+function createSortingItemTemplate(sorting, currentSortType) {
   const {name} = sorting;
 
   return (`
         <div class="trip-sort__item  trip-sort__item--${name}">
-        <input id="sort-${name}" class="trip-sort__input  visually-hidden" type="radio" data-sort-type="${name}" name="trip-sort" value="sort-${name}" ${isChecked ? 'checked' : ''}>
+        <input id="sort-${name}" class="trip-sort__input  visually-hidden" type="radio" data-sort-type="${name}" name="trip-sort" value="sort-${name}" ${name === currentSortType ? 'checked' : ''}>
         <label class="trip-sort__btn" for="sort-${name}">${name}</label>
       </div>
   `);
 }
 
-function createSortingTemplate(sortingItems) {
+function createSortingTemplate(sortingItems, currentSortType) {
 
   const sortingItemTemplate = sortingItems
-    .map((sorting, index) => createSortingItemTemplate(sorting, index === 0))
+    .map((sorting, index) => createSortingItemTemplate(sorting, currentSortType, index === 0))
     .join('');
 
   return (`
@@ -39,7 +39,7 @@ export default class SortingView extends AbstractView {
   }
 
   get template() {
-    return createSortingTemplate(this.#sorting);
+    return createSortingTemplate(this.#sorting, this.#currentSortType);
   }
 
   #sortTypeChangeHandler = (evt) => {

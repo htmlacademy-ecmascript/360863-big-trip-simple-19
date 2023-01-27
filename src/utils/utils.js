@@ -45,3 +45,7 @@ export function renameProperty(obj, fromKey, toKey) {
   obj[toKey] = obj[fromKey];
   delete obj[fromKey];
 }
+
+export function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}

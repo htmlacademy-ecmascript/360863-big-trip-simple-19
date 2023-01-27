@@ -78,9 +78,14 @@ export default class SchedulePresenter {
   }
 
   #handleSortTypeChange = (sortType) => {
+
+    if(this.#currentSortType === sortType) {
+      return;
+    }
+
     this.#currentSortType = sortType;
-    this.#clearPointList();
-    this.#renderPointsList();
+    this.#clearBoard();
+    this.#renderBoard();
   };
 
   #renderSort() {
@@ -109,16 +114,9 @@ export default class SchedulePresenter {
     this.#pointPresenter.set(point.id, pointPresenter);
   }
 
-  /*TODO: удалить #renderPointsList и перенести логику в #renderBoard*/
   #renderPointsList() {
     render(this.#scheduleComponent, this.#scheduleContainer);
     this.points.forEach((point) => this.#renderPoint({point: point, offers: this.#offers, destinations: this.#destinations, offersByType: this.#offersByType}));
-  }
-
-  /*TODO: удалить #clearPointList и перенести логику в #clearBoard*/
-  #clearPointList() {
-    this.#pointPresenter.forEach((presenter) => presenter.destroy());
-    this.#pointPresenter.clear();
   }
 
   #renderNoPoints() {

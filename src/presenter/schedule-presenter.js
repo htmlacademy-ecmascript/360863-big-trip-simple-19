@@ -35,6 +35,8 @@ export default class SchedulePresenter {
 
   get points() {
     switch (this.#currentSortType) {
+      case this.#defaulSort:
+        return [...this.#dataModel.points].sort((a,b) => new Date(a.dateFrom) - new Date(b.dateFrom));
       case SORTING_TYPES.PRICE:
         return [...this.#dataModel.points].sort((a,b) => b.basePrice - a.basePrice);
       case SORTING_TYPES.DAY:

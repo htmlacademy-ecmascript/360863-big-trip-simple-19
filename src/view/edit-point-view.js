@@ -182,7 +182,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formCloseHandler = (evt) => {
     evt.preventDefault();
-    this.#handleCloseClick(this._state);
+    this.#handleCloseClick(this.#point);
   };
 
   #typeChangeHandler = (evt) => {

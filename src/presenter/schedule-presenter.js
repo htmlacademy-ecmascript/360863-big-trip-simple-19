@@ -35,19 +35,6 @@ export default class SchedulePresenter {
     this.#dataModel.addObserver(this.#handleModelEvent);
   }
 
-/*  get points() {
-    switch (this.#currentSortType) {
-      case SORTING_TYPES.DEFAULT:
-        return [...this.#dataModel.points].sort((a,b) => new Date(a.dateFrom) - new Date(b.dateFrom));
-      case SORTING_TYPES.PRICE:
-        return [...this.#dataModel.points].sort((a,b) => b.basePrice - a.basePrice);
-      case SORTING_TYPES.DAY:
-        return [...this.#dataModel.points].sort((a,b) => new Date(b.dateFrom) - new Date(a.dateFrom));
-    }
-
-    return this.#dataModel.points;
-  }*/
-
   get points() {
     switch (this.#currentSortType) {
       case SORTING_TYPES.DEFAULT:
@@ -101,10 +88,6 @@ export default class SchedulePresenter {
       this.#renderBoard();
       return;
     }
-
-/*    if(this.#currentSortType === sortType && this.#currentSortType !== SORTING_TYPES.DAY) {
-      return;
-    }*/
 
     if(this.#currentSortType === sortType) {
       return;

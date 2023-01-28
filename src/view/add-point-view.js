@@ -1,4 +1,4 @@
-import {POINT_TYPES, UPDATE_TYPE, USER_ACTION} from '../const';
+import {POINT_TYPES} from '../const';
 import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import flatpickr from 'flatpickr';

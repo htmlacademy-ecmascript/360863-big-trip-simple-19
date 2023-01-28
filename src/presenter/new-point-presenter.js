@@ -1,5 +1,4 @@
 import {remove, render, RenderPosition} from '../framework/render';
-import EditPointView from '../view/edit-point-view';
 import {nanoid} from 'nanoid';
 import {USER_ACTION, UPDATE_TYPE} from '../const';
 import AddPointView from '../view/add-point-view';

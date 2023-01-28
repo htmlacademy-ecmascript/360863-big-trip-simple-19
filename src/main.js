@@ -1,4 +1,3 @@
-import FilterView from './view/filter-view.js';
 import {render, RenderPosition} from './framework/render.js';
 import SchedulePresenter from './presenter/schedule-presenter.js';
 import DataModel from './model/points-model';
@@ -31,8 +30,6 @@ const filterPresenter = new FilterPresenter ({
   DATA_MODEL
 });
 
-
-
 const newPointButtonComponent = new NewPointButtonView ({
   onClick: handleNewPointButtonClick
 });
@@ -46,7 +43,7 @@ function handleNewPointButtonClick() {
   newPointButtonComponent.element.disabled = true;
 }
 
-render(newPointButtonComponent, tripHeaderElement, RenderPosition.BEFOREEND)
+render(newPointButtonComponent, tripHeaderElement, RenderPosition.BEFOREEND);
 
 filterPresenter.init();
 schedulePresenter.init();

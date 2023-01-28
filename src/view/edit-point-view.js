@@ -276,5 +276,5 @@ export default class EditPointView extends AbstractStatefulView {
   #formDeleteHandler = (evt) => {
     evt.preventDefault();
     this.#handleDeleteClick(this.#point);
-  }
+  };
 }

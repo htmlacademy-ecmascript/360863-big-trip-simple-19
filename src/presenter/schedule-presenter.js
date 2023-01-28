@@ -1,5 +1,4 @@
 import ScheduleView from '../view/schedule-view.js';
-import AddPointView from '../view/add-point-view';
 import {render, RenderPosition, remove} from '../framework/render.js';
 import EmptyPointsView from '../view/empty-points-view';
 import SortingView from '../view/sorting-view';
@@ -48,8 +47,6 @@ export default class SchedulePresenter {
     const points = [...this.#dataModel.points];
     const filteredPoints = FILTER[this.#filterType](points);
 
-    console.log(FILTER[this.#filterType])
-
     switch (this.#currentSortType) {
       case SORTING_TYPES.DEFAULT:
         return filteredPoints.sort((a,b) => dayjs(a.dateFrom, 'DD-MM-YYTHH:mm:ss') - dayjs(b.dateFrom, 'DD-MM-YYTHH:mm:ss'));
@@ -85,9 +82,8 @@ export default class SchedulePresenter {
     });
 
     this.#currentSortType = SORTING_TYPES.DEFAULT;
-    this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING)
+    this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
     this.#newPointPresenter.init(this.#offers, this.#destinations, this.#blankPoint, this.#offersByType);
-
   }
 
   #renderBoard() {
@@ -123,7 +119,7 @@ export default class SchedulePresenter {
 
   #handleSortTypeChange = (sortType) => {
     if(this.#currentSortType === sortType && this.#currentSortType === SORTING_TYPES.DAY) {
-      this.#currentSortType = SORTING_TYPES.DEFAULT
+      this.#currentSortType = SORTING_TYPES.DEFAULT;
       this.#clearBoard();
       this.#renderBoard();
       return;
@@ -167,7 +163,7 @@ export default class SchedulePresenter {
   #renderNoPoints() {
     this.#noPointComponent = new EmptyPointsView({
       filterType: this.#filterType
-    })
+    });
 
     render(this.#noPointComponent, this.#scheduleComponent.element, RenderPosition.AFTERBEGIN);
   }
@@ -189,24 +185,21 @@ export default class SchedulePresenter {
         this.#dataModel.deletePoint(updateType, update);
         break;
     }
-  }
+  };
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UPDATE_TYPE.PATCH:
-        console.log(1)
         this.#pointPresenter.get(data.id).init(data, this.#offers, this.#destinations, this.#offersByType);
         break;
       case UPDATE_TYPE.MINOR:
-        console.log(2)
         this.#clearBoard();
         this.#renderBoard();
         break;
       case UPDATE_TYPE.MAJOR:
-        console.log(3)
         this.#clearBoard(true);
         this.#renderBoard();
         break;
     }
-  }
+  };
 }

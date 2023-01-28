@@ -36,7 +36,7 @@ export function humanizeTime(date) {
 }
 
 export function isDateFuture(date) {
-  const currentDate = dayjs(date, 'DD-MM-YYTHH:mm:ss')
+  const currentDate = dayjs(date, 'DD-MM-YYTHH:mm:ss');
 
   return currentDate >= dayjs();
 }

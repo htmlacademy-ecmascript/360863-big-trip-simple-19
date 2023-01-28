@@ -35,7 +35,7 @@ export default class FilterView extends AbstractView {
     this.#currentFilter = currentFilterType;
     this.#handleFilterTypeChange = onFilterTypeChange;
 
-    this.element.addEventListener('click', this.#filterTypeChangeHandler)
+    this.element.addEventListener('click', this.#filterTypeChangeHandler);
   }
 
   get template() {
@@ -44,5 +44,5 @@ export default class FilterView extends AbstractView {
 
   #filterTypeChangeHandler = (evt) => {
     this.#handleFilterTypeChange(evt.target.value);
-  }
+  };
 }

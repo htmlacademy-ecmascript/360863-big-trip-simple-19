@@ -1,4 +1,4 @@
-import {POINT_TYPES} from '../const';
+import {POINT_TYPES, UPDATE_TYPE, USER_ACTION} from '../const';
 import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import flatpickr from 'flatpickr';
@@ -19,9 +19,9 @@ function createOffersTemplate(offersByType, point) {
 
   return offers.map((offer) =>
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${point.id}" type="checkbox" name="event-offer-${offer.title}"
-      ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''}>
-      <label class="event__offer-label" for="event-offer-${offer.title}-${point.id}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.replace(/\s+/g, '-').toLowerCase()}-${point.id}" type="checkbox" name="event-offer-${offer.title}"
+      ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''} data-offer-id="${offer.id}">
+      <label class="event__offer-label" for="event-offer-${offer.title.replace(/\s+/g, '-').toLowerCase()}-${point.id}">
         <span class="event__offer-title">Add ${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
@@ -134,14 +134,19 @@ export default class AddPointView extends AbstractStatefulView {
   #point;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #handleFormSubmit;
+  #handleFormCancel;
+  _state;
 
-  constructor({offers, destinations, point, offersByType}) {
+  constructor({offers, destinations, point, offersByType, onFormSubmit, onFormCancel}) {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
     this._state = point;
     this.#point = Object.assign({}, point);
     this.#offersByType = offersByType;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleFormCancel = onFormCancel;
 
     this._restoreHandlers();
   }
@@ -157,7 +162,8 @@ export default class AddPointView extends AbstractStatefulView {
     this.element.querySelector('input[name="event-start-time"]').addEventListener('change', this.#startTimeChangeHandler);
     this.element.querySelector('input[name="event-end-time"]').addEventListener('change', this.#endTimeChangeHandler);
     this.element.querySelectorAll('.event__offer-checkbox').forEach((el) => el.addEventListener('click', this.#offersChangeHandler));
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#reset);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#formSubmitHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formCloseHandler);
     this.#setDatepickers();
   }
 
@@ -264,4 +270,16 @@ export default class AddPointView extends AbstractStatefulView {
       dateTo: dayjs(userDate).format('YYYY-MM-DDTHH:mm:ss'),
     });
   };
+
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit(this._state);
+  };
+
+  #formCloseHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormCancel(this.#point);
+  };
+
 }

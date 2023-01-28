@@ -138,6 +138,6 @@ export function generateBlankPoint() {
     'offers': [getRandomArrayElement(OFFERS_BY_TYPE
       .find((el) => el.type === POINT_TYPE).offers
       .map((offer) => (offer.id)))],
-    'type': POINT_TYPE
+    'type': 'restaurant'
   }];
 }

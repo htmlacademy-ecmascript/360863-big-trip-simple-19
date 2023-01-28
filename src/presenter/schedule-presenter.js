@@ -48,6 +48,8 @@ export default class SchedulePresenter {
     const points = [...this.#dataModel.points];
     const filteredPoints = FILTER[this.#filterType](points);
 
+    console.log(FILTER[this.#filterType])
+
     switch (this.#currentSortType) {
       case SORTING_TYPES.DEFAULT:
         return filteredPoints.sort((a,b) => dayjs(a.dateFrom, 'DD-MM-YYTHH:mm:ss') - dayjs(b.dateFrom, 'DD-MM-YYTHH:mm:ss'));

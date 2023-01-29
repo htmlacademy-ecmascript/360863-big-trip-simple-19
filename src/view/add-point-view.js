@@ -94,7 +94,7 @@ function getAddPointTemplate(offers, destinations, point, offersByType) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${point.id}" type="text" name="event-price" value="${point.basePrice}">
+          <input class="event__input  event__input--price" id="event-price-${point.id}" type="number" name="event-price" value="${point.basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -199,6 +199,8 @@ export default class AddPointView extends AbstractStatefulView {
       this.updateElement({
         destination: this._state.destination,
       });
+    } else {
+      evt.target.value = '';
     }
   };
 

@@ -169,7 +169,9 @@ export default class SchedulePresenter {
   }
 
   #handleModeChange = () => {
-    this.#newPointPresenter.destroy();
+    if(this.#newPointPresenter !== null) {
+      this.#newPointPresenter.destroy();
+    }
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 

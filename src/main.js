@@ -20,8 +20,6 @@ const tripHeaderElement = document.querySelector('.trip-main');
 const AUTHORIZATION = 'Basic er883jlhdzb534ds1adfw';
 const END_POINT = 'https://19.ecmascript.pages.academy/big-trip-simple/';
 
-
-
 const dataModel = new DataModel({
   pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION),
   offersApiService: new OffersApiService(END_POINT, AUTHORIZATION),

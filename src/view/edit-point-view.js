@@ -34,7 +34,7 @@ function createDestinationsTemplate(destinations){
   return destinations.map((el) => `<option value="${el.name}">`).join('');
 }
 
-function createPointEditorTemplate(offers, destinations, point, offersByType) {
+function createPointEditorTemplate(destinations, point, offersByType) {
   const typesTemplate = createTypesTemplate(point.type, point.id);
   const pointDestination = destinations.find((el) => el.id === point.destination);
   const timeFrom = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss').format('DD/MM/YY HH:mm');
@@ -115,7 +115,6 @@ function createPointEditorTemplate(offers, destinations, point, offersByType) {
 }
 
 export default class EditPointView extends AbstractStatefulView {
-  #offers;
   #destinations;
   #point;
   #offersByType;
@@ -125,9 +124,8 @@ export default class EditPointView extends AbstractStatefulView {
   #datepickerTo = null;
   #handleDeleteClick;
 
-  constructor({offers, destinations, point, offersByType, onFormSubmit, onCloseClick, onDeleteClick}) {
+  constructor({destinations, point, offersByType, onFormSubmit, onCloseClick, onDeleteClick}) {
     super();
-    this.#offers = offers;
     this.#destinations = destinations;
     this._state = point;
     this.#point = Object.assign({}, point);
@@ -140,7 +138,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createPointEditorTemplate(this.#offers, this.#destinations, this._state, this.#offersByType);
+    return createPointEditorTemplate(this.#destinations, this._state, this.#offersByType);
   }
 
   reset(point) {

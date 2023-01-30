@@ -66,6 +66,11 @@ export default class SchedulePresenter {
     this.#blankPoint = [...this.#dataModel.blankPoint];
     this.#sortingList = [...this.#sortingModel.sortingList];
 
+    //console.log(this.#offersByType, 111111)
+    //console.log(this.points, 2222)
+    //console.log(this.#offers, 222)
+
+
     this.#renderBoard();
   }
 

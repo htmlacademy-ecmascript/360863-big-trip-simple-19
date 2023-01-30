@@ -33,6 +33,8 @@ export default class PointPresenter {
     this.#destinations = destinations;
     this.#offersByType = offersByType;
 
+    //console.log(this.#destinations )
+
     const prevPointComponent = this.#pointComponent;
     const prevEditPointComponent = this.#pointEditComponent;
 

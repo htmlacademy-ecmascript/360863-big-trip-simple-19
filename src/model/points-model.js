@@ -1,26 +1,44 @@
 import {POINT_TYPES, POINTS_COUNT} from '../const';
-import {
-  generateBlankPoint,
-  generateDestinations,
-  generateOffers,
-  generateOffersByType,
-  generatePoints,
-} from '../mock/points';
+import {generateBlankPoint, generateOffers, generateOffersByType, generatePoints,} from '../mock/points';
 import {renameProperty} from '../utils/utils';
 import Observable from '../framework/observable';
+import ApiService from '../framework/api-service';
 
 const OFFERS_COUNT = 5;
-const DESTINATIONS_COUNT = 5;
 
 export default class DataModel extends Observable {
+  #pointsApiService = null;
+  #offersApiService = null;
+  #destinationsApiService = null;
   #types = POINT_TYPES;
-  #offersByType = generateOffersByType();
-  #destinations = generateDestinations(DESTINATIONS_COUNT);
+  #destinations = [];
+  #points = [];
+  #offersByType = [];
   #offers = generateOffers(OFFERS_COUNT);
-  #points = generatePoints(POINTS_COUNT);
-  #formatedPoints = this.#formatPointKeys(this.#points);
   #blankPoint = generateBlankPoint();
   #formatedBlankPoints = this.#formatPointKeys(this.#blankPoint);
+
+  constructor({pointsApiService, offersApiService, destinationsApiService}) {
+    super();
+    this.#pointsApiService = pointsApiService;
+    this.#offersApiService = offersApiService;
+    this.#destinationsApiService = destinationsApiService;
+  }
+
+  async init() {
+    try {
+      this.#destinations = await this.#destinationsApiService.destinations;
+
+      const points = await this.#pointsApiService.points;
+      this.#points = points.map(this.#adaptToClient)
+
+      this.#offersByType = await this.#offersApiService.offers;
+
+    } catch(err) {
+      this.#destinations = null;
+      this.#points = null;
+    }
+  }
 
   get offersByType() {
     return this.#offersByType;
@@ -39,7 +57,7 @@ export default class DataModel extends Observable {
   }
 
   get points() {
-    return this.#formatedPoints;
+    return this.#points;
   }
 
   get blankPoint() {
@@ -47,40 +65,40 @@ export default class DataModel extends Observable {
   }
 
   updatePoint(updateType, update) {
-    const index = this.#formatedPoints.findIndex((point) => point.id === update.id);
+    const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting point');
     }
 
-    this.#formatedPoints = [
-      ...this.#formatedPoints.slice(0, index),
+    this.#points = [
+      ...this.#points.slice(0, index),
       update,
-      ...this.#formatedPoints.slice(index + 1),
+      ...this.#points.slice(index + 1),
     ];
 
     this._notify(updateType, update);
   }
 
   addPoint(updateType, update) {
-    this.#formatedPoints = [
+    this.#points = [
       update,
-      ...this.#formatedPoints,
+      ...this.#points,
     ];
 
     this._notify(updateType, update);
   }
 
   deletePoint(updateType, update) {
-    const index = this.#formatedPoints.findIndex((point) => point.id === update.id);
+    const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting point');
     }
 
-    this.#formatedPoints = [
-      ...this.#formatedPoints.slice(0, index),
-      ...this.#formatedPoints.slice(index + 1),
+    this.#points = [
+      ...this.#points.slice(0, index),
+      ...this.#points.slice(index + 1),
     ];
 
     this._notify(updateType);
@@ -94,5 +112,19 @@ export default class DataModel extends Observable {
     });
 
     return points;
+  }
+
+  #adaptToClient(point) {
+    const adaptedPoint = {...point,
+      basePrice: point['base_price'],
+      dateFrom: point['date_from'],
+      dateTo: point['date_to'],
+    };
+
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+
+    return adaptedPoint;
   }
 }

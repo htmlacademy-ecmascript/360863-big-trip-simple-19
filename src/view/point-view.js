@@ -4,10 +4,11 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
-function getOffersTemplate(point, offers) {
-  point.offers.forEach((el) => +el);
+function getOffersTemplate(point, offersByType) {
+  const offers = offersByType.filter((offer) => point.type.includes(offer.type))[0].offers
+    .filter((offer) => point.offers.includes(offer.id));
 
-  return offers.filter((offer) => point.offers.includes(offer.id)).map((el) =>
+  return offers.map((el) =>
     `<li class="event__offer">
       <span class="event__offer-title">${el.title}</span>
       &plus;&euro;&nbsp;
@@ -16,13 +17,13 @@ function getOffersTemplate(point, offers) {
   ).join('');
 }
 
-function getPointTemplate(point, destinations, offers) {
+function getPointTemplate(point, destinations, offersByType) {
   const pointDestination = destinations.find((el) => el.id === point.destination);
   const date = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss');
   const dateFrom = humanizeDate(date);
   const timeFrom = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss').format('HH:mm');
   const timeTo = dayjs(point.dateTo, 'DD-MM-YYTHH:mm:ss').format('HH:mm');
-  const offersList = getOffersTemplate(point, offers);
+  const offersList = getOffersTemplate(point, offersByType);
 
   return (`
     <li class="trip-events__item">
@@ -59,19 +60,21 @@ export default class PointView extends AbstractView {
   #destinations;
   #offers;
   #handleEditClick;
+  #offersByType;
 
-  constructor({point, destinations, offers, onEditClick}) {
+  constructor({point, destinations, offers, offersByType, onEditClick}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
     this.#offers = offers;
+    this.#offersByType = offersByType;
     this.#handleEditClick = onEditClick;
 
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
-    return getPointTemplate(this.#point, this.#destinations, this.#offers);
+    return getPointTemplate(this.#point, this.#destinations, this.#offersByType);
   }
 
   #editClickHandler = (evt) => {

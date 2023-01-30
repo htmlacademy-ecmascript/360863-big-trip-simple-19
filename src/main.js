@@ -5,45 +5,64 @@ import SortingModel from './model/sorting-model';
 import FilterModel from './model/filter-model';
 import FilterPresenter from './presenter/filter-presenter';
 import NewPointButtonView from './view/new-point-button-view';
-
+import PointsApiService from './points-api-service';
+import OffersApiService from './offers-api-service';
+import DestinationsApiService from './destinations-api-service';
 
 const headerElement = document.querySelector('.page-header');
 const mainElement = document.querySelector('.page-main');
 const tripControlElements = headerElement.querySelector('.trip-controls__filters');
 const tripElements = mainElement.querySelector('.trip-events');
-const DATA_MODEL = new DataModel();
+//const DATA_MODEL = new DataModel();
 const SORTING_MODEL = new SortingModel();
 const filterModel = new FilterModel();
 const tripHeaderElement = document.querySelector('.trip-main');
+const AUTHORIZATION = 'Basic er883jlhdzb534ds1adfw';
+const END_POINT = 'https://19.ecmascript.pages.academy/big-trip-simple/';
 
-const schedulePresenter = new SchedulePresenter({
-  scheduleContainer: tripElements,
-  filterModel,
-  DATA_MODEL,
-  SORTING_MODEL,
-  onNewPointDestroy: handleNewPointFormClose
+
+
+const dataModel = new DataModel({
+  pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION),
+  offersApiService: new OffersApiService(END_POINT, AUTHORIZATION),
+  destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION),
 });
 
-const filterPresenter = new FilterPresenter ({
-  filterContainer: tripControlElements,
-  filterModel,
-  DATA_MODEL
-});
+dataModel.init().then(() => {
+  const schedulePresenter = new SchedulePresenter({
+    scheduleContainer: tripElements,
+    filterModel,
+    DATA_MODEL: dataModel,
+    SORTING_MODEL,
+    onNewPointDestroy: handleNewPointFormClose
+  });
 
-const newPointButtonComponent = new NewPointButtonView ({
-  onClick: handleNewPointButtonClick
-});
+  const filterPresenter = new FilterPresenter ({
+    filterContainer: tripControlElements,
+    filterModel,
+    DATA_MODEL: dataModel
+  });
 
-function handleNewPointFormClose() {
-  newPointButtonComponent.element.disabled = false;
-}
+  const newPointButtonComponent = new NewPointButtonView ({
+    onClick: handleNewPointButtonClick
+  });
 
-function handleNewPointButtonClick() {
-  schedulePresenter.createPoint();
-  newPointButtonComponent.element.disabled = true;
-}
+  render(newPointButtonComponent, tripHeaderElement, RenderPosition.BEFOREEND);
 
-render(newPointButtonComponent, tripHeaderElement, RenderPosition.BEFOREEND);
+  filterPresenter.init();
+  schedulePresenter.init();
 
-filterPresenter.init();
-schedulePresenter.init();
+  function handleNewPointFormClose() {
+    newPointButtonComponent.element.disabled = false;
+  }
+
+  function handleNewPointButtonClick() {
+    schedulePresenter.createPoint();
+    newPointButtonComponent.element.disabled = true;
+  }
+})
+
+
+
+
+

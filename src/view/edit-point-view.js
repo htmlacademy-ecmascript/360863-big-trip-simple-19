@@ -37,8 +37,8 @@ function createDestinationsTemplate(destinations){
 function createPointEditorTemplate(destinations, point, offersByType) {
   const typesTemplate = createTypesTemplate(point.type, point.id);
   const pointDestination = destinations.find((el) => el.id === point.destination);
-  const timeFrom = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss').format('DD/MM/YY HH:mm');
-  const timeTo = dayjs(point.dateTo, 'DD-MM-YYTHH:mm:ss').format('DD/MM/YY HH:mm');
+  const timeFrom = dayjs(point.dateFrom).format('DD/MM/YY HH:mm');
+  const timeTo = dayjs(point.dateTo).format('DD/MM/YY HH:mm');
   const offersTemplate = createOffersTemplate(offersByType, point);
   const destinationsTemplate = createDestinationsTemplate(destinations);
 
@@ -214,7 +214,7 @@ export default class EditPointView extends AbstractStatefulView {
   #startTimeChangeHandler = (evt) => {
     evt.preventDefault();
     const dateValue = `${evt.target.value}`;
-    this._state.dateFrom = dayjs(dateValue, 'DD/MM/YY HH:mm').format('DD-MM-YYTHH:mm:ss');
+    this._state.dateFrom = new Date(dayjs(dateValue, 'DD/MM/YY HH:mm'));
     this.updateElement({
       dateFrom: this._state.dateFrom,
     });
@@ -223,7 +223,7 @@ export default class EditPointView extends AbstractStatefulView {
   #endTimeChangeHandler = (evt) => {
     evt.preventDefault();
     const dateValue = `${evt.target.value}`;
-    this._state.dateTo = dayjs(dateValue, 'DD/MM/YY HH:mm').format('DD-MM-YYTHH:mm:ss');
+    this._state.dateTo = new Date(dayjs(dateValue, 'DD/MM/YY HH:mm'));
     this.updateElement({
       dateTo: this._state.dateTo,
     });

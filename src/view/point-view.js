@@ -19,10 +19,9 @@ function getOffersTemplate(point, offersByType) {
 
 function getPointTemplate(point, destinations, offersByType) {
   const pointDestination = destinations.find((el) => el.id === point.destination);
-  const date = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss');
-  const dateFrom = humanizeDate(date);
-  const timeFrom = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss').format('HH:mm');
-  const timeTo = dayjs(point.dateTo, 'DD-MM-YYTHH:mm:ss').format('HH:mm');
+  const dateFrom = humanizeDate(point.dateFrom);
+  const timeFrom = dayjs(point.dateFrom).format('HH:mm');
+  const timeTo = dayjs(point.dateTo).format('HH:mm');
   const offersList = getOffersTemplate(point, offersByType);
 
   return (`
@@ -58,7 +57,6 @@ function getPointTemplate(point, destinations, offersByType) {
 export default class PointView extends AbstractView {
   #point;
   #destinations;
-  /*#offers;*/
   #handleEditClick;
   #offersByType;
 

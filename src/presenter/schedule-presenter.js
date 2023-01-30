@@ -61,7 +61,7 @@ export default class SchedulePresenter {
   init() {
     this.#destinations = [...this.#dataModel.destinations];
     this.#offersByType = [...this.#dataModel.offersByType];
-    this.#blankPoint = [...this.#dataModel.blankPoint];
+    this.#blankPoint = this.#dataModel.blankPoint;
     this.#sortingList = [...this.#sortingModel.sortingList];
 
     this.#renderBoard();
@@ -71,7 +71,7 @@ export default class SchedulePresenter {
 
     this.#newPointPresenter = new NewPointPresenter({
       destinations: this.#destinations,
-      point: this.#blankPoint[0],
+      point: this.#blankPoint,
       offersByType: this.#offersByType,
       pointListContainer: this.#scheduleComponent.element,
       onDataChange: this.#handleViewAction,

@@ -15,8 +15,8 @@ export default class DataModel extends Observable {
   #points = [];
   #offersByType = [];
   #offers = generateOffers(OFFERS_COUNT);
-  #blankPoint = generateBlankPoint();
-  #formatedBlankPoints = this.#formatPointKeys(this.#blankPoint);
+  #blankPoint;
+  //#formatedBlankPoints = this.#formatPointKeys(this.#blankPoint);
 
   constructor({pointsApiService, offersApiService, destinationsApiService}) {
     super();
@@ -28,12 +28,10 @@ export default class DataModel extends Observable {
   async init() {
     try {
       this.#destinations = await this.#destinationsApiService.destinations;
-
       const points = await this.#pointsApiService.points;
       this.#points = points.map(this.#adaptToClient)
-
       this.#offersByType = await this.#offersApiService.offers;
-
+      this.#blankPoint = this.#points[0];
     } catch(err) {
       this.#destinations = null;
       this.#points = null;
@@ -61,7 +59,7 @@ export default class DataModel extends Observable {
   }
 
   get blankPoint() {
-    return this.#formatedBlankPoints;
+    return this.#blankPoint;
   }
 
   updatePoint(updateType, update) {
@@ -104,7 +102,7 @@ export default class DataModel extends Observable {
     this._notify(updateType);
   }
 
-  #formatPointKeys(points) {
+/*  #formatPointKeys(points) {
     points.forEach((point) => {
       renameProperty(point, 'base_price', 'basePrice');
       renameProperty(point, 'date_from', 'dateFrom');
@@ -112,13 +110,13 @@ export default class DataModel extends Observable {
     });
 
     return points;
-  }
+  }*/
 
   #adaptToClient(point) {
     const adaptedPoint = {...point,
       basePrice: point['base_price'],
-      dateFrom: point['date_from'],
-      dateTo: point['date_to'],
+      dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
+      dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
     };
 
     delete adaptedPoint['base_price'];

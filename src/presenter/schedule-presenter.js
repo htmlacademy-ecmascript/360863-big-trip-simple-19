@@ -189,9 +189,12 @@ export default class SchedulePresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UPDATE_TYPE.PATCH:
+        console.log(111)
+        console.log(data)
         this.#pointPresenter.get(data.id).init(data, this.#destinations, this.#offersByType);
         break;
       case UPDATE_TYPE.MINOR:
+        console.log(22)
         this.#clearBoard();
         this.#renderBoard();
         break;

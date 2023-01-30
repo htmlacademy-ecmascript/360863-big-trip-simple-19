@@ -16,7 +16,6 @@ export default class DataModel extends Observable {
   #offersByType = [];
   #offers = generateOffers(OFFERS_COUNT);
   #blankPoint;
-  //#formatedBlankPoints = this.#formatPointKeys(this.#blankPoint);
 
   constructor({pointsApiService, offersApiService, destinationsApiService}) {
     super();

@@ -127,8 +127,8 @@ export default class EditPointView extends AbstractStatefulView {
   constructor({destinations, point, offersByType, onFormSubmit, onCloseClick, onDeleteClick}) {
     super();
     this.#destinations = destinations;
-    this._state = point;
     this.#point = Object.assign({}, point);
+    this._state = point;
     this.#offersByType = offersByType;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseClick = onCloseClick;
@@ -141,9 +141,8 @@ export default class EditPointView extends AbstractStatefulView {
     return createPointEditorTemplate(this.#destinations, this._state, this.#offersByType);
   }
 
-  reset(point) {
-    point = this.#point;
-    this.updateElement(point);
+  reset() {
+    this.updateElement(this.#point);
   }
 
   removeElement() {
@@ -275,6 +274,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formDeleteHandler = (evt) => {
     evt.preventDefault();
+    this._state = this.#point;
     this.#handleDeleteClick(this.#point);
   };
 }

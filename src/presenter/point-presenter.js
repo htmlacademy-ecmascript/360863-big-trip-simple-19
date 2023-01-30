@@ -16,7 +16,6 @@ export default class PointPresenter {
   #handleDataChange;
   #handleModeChange;
   #point;
-  #offers;
   #destinations;
   #offersByType;
   #mode = MODE.DEFAULT;
@@ -27,7 +26,7 @@ export default class PointPresenter {
     this.#handleModeChange = onModeChange;
   }
 
-  init(point, /*offers, */destinations, offersByType) {
+  init(point, destinations, offersByType) {
     this.#point = point;
     this.#destinations = destinations;
     this.#offersByType = offersByType;
@@ -118,8 +117,12 @@ export default class PointPresenter {
     this.#replaceFormToPoint();
   };
 
-  #handlerOnCloseClick = () => {
-    this.#pointEditComponent.reset(this.#point);
+  #handlerOnCloseClick = (update) => {
+    this.#handleDataChange(
+      USER_ACTION.UPDATE_POINT,
+      UPDATE_TYPE.PATCH,
+      update,
+    );
     this.#replaceFormToPoint();
   };
 

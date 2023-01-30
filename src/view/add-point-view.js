@@ -279,6 +279,7 @@ export default class AddPointView extends AbstractStatefulView {
 
   #formCloseHandler = (evt) => {
     evt.preventDefault();
+    this._state = this.#point;
     this.#handleFormCancel(this.#point);
   };
 

@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 
 function createTypesTemplate(currentType, pointId) {
   return POINT_TYPES.map((type) =>
@@ -17,9 +19,9 @@ function createOffersTemplate(offersByType, point) {
 
   return offers.map((offer) =>
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-${point.id}" type="checkbox" name="event-offer-${offer.title}"
-      ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''}>
-      <label class="event__offer-label" for="event-offer-${offer.title}-${point.id}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.replace(/\s+/g, '-').toLowerCase()}-${point.id}" type="checkbox" name="event-offer-${offer.title}"
+      ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''} data-offer-id="${offer.id}">
+      <label class="event__offer-label" for="event-offer-${offer.title.replace(/\s+/g, '-').toLowerCase()}-${point.id}">
         <span class="event__offer-title">Add ${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
@@ -43,8 +45,8 @@ function createDestinationsTemplate(destinations){
 function getAddPointTemplate(offers, destinations, point, offersByType) {
   const typesTemplate = createTypesTemplate(point.type, point.id);
   const pointDestination = destinations.find((el) => el.id === point.destination);
-  const timeFrom = dayjs(point.dateFrom).format('YY/MM/DD HH:mm');
-  const timeTo = dayjs(point.dateTo).format('YY/MM/DD HH:mm');
+  const timeFrom = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss').format('DD/MM/YY HH:mm');
+  const timeTo = dayjs(point.dateTo, 'DD-MM-YYTHH:mm:ss').format('DD/MM/YY HH:mm');
   const offersTemplate = createOffersTemplate(offersByType, point);
   const photosTemplate = createPhotosTemplate(destinations, point);
   const destinationsTemplate = createDestinationsTemplate(destinations);
@@ -92,7 +94,7 @@ function getAddPointTemplate(offers, destinations, point, offersByType) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${point.id}" type="text" name="event-price" value="${point.basePrice}">
+          <input class="event__input  event__input--price" id="event-price-${point.id}" type="number" name="event-price" value="${point.basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -132,14 +134,19 @@ export default class AddPointView extends AbstractStatefulView {
   #point;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #handleFormSubmit;
+  #handleFormCancel;
+  _state;
 
-  constructor({offers, destinations, point, offersByType}) {
+  constructor({offers, destinations, point, offersByType, onFormSubmit, onFormCancel}) {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
     this._state = point;
     this.#point = Object.assign({}, point);
     this.#offersByType = offersByType;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleFormCancel = onFormCancel;
 
     this._restoreHandlers();
   }
@@ -155,7 +162,8 @@ export default class AddPointView extends AbstractStatefulView {
     this.element.querySelector('input[name="event-start-time"]').addEventListener('change', this.#startTimeChangeHandler);
     this.element.querySelector('input[name="event-end-time"]').addEventListener('change', this.#endTimeChangeHandler);
     this.element.querySelectorAll('.event__offer-checkbox').forEach((el) => el.addEventListener('click', this.#offersChangeHandler));
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#reset);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#formSubmitHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formCloseHandler);
     this.#setDatepickers();
   }
 
@@ -163,6 +171,20 @@ export default class AddPointView extends AbstractStatefulView {
     this._state = this.#point;
     this.updateElement(this._state);
   };
+
+  removeElement() {
+    super.removeElement();
+
+    if(this.#datepickerFrom){
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if(this.#datepickerTo){
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
 
   #typeChangeHandler = (evt) => {
     this._state.type = evt.target.value;
@@ -177,6 +199,8 @@ export default class AddPointView extends AbstractStatefulView {
       this.updateElement({
         destination: this._state.destination,
       });
+    } else {
+      evt.target.value = '';
     }
   };
 
@@ -188,18 +212,18 @@ export default class AddPointView extends AbstractStatefulView {
   };
 
   #startTimeChangeHandler = (evt) => {
-    const dateValue = `20${evt.target.value}`; /*TODO:Не смог решить по другому, получилось странно*/
-    const data = new Date(dateValue);
-    this._state.dateFrom = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
+    evt.preventDefault();
+    const dateValue = `${evt.target.value}`;
+    this._state.dateFrom = dayjs(dateValue, 'DD/MM/YY HH:mm').format('DD-MM-YYTHH:mm:ss');
     this.updateElement({
       dateFrom: this._state.dateFrom,
     });
   };
 
   #endTimeChangeHandler = (evt) => {
-    const dateValue = `20${evt.target.value}`; /*TODO:Не смог решить по другому, получилось странно*/
-    const data = new Date(dateValue);
-    this._state.dateTo = dayjs(data).format('YYYY-MM-DDTHH:mm:ss');
+    evt.preventDefault();
+    const dateValue = `${evt.target.value}`;
+    this._state.dateTo = dayjs(dateValue, 'DD/MM/YY HH:mm').format('DD-MM-YYTHH:mm:ss');
     this.updateElement({
       dateTo: this._state.dateTo,
     });
@@ -216,7 +240,7 @@ export default class AddPointView extends AbstractStatefulView {
       this.#datepickerFrom = flatpickr(
         this.element.querySelector(`#event-start-time-${this._state.id}`),
         {
-          dateFormat: 'y/m/d H:i',
+          dateFormat: 'd/m/y H:i',
           defaultDate: this._state.id.dateFrom,
           enableTime: true,
           onChange: this.#dateFromChangeHandler,
@@ -228,7 +252,7 @@ export default class AddPointView extends AbstractStatefulView {
       this.#datepickerTo = flatpickr(
         this.element.querySelector(`#event-end-time-${this._state.id}`),
         {
-          dateFormat: 'y/m/d H:i',
+          dateFormat: 'd/m/y H:i',
           defaultDate: this._state.id.dateTo,
           enableTime: true,
           onChange: this.#dateToChangeHandler,
@@ -248,4 +272,16 @@ export default class AddPointView extends AbstractStatefulView {
       dateTo: dayjs(userDate).format('YYYY-MM-DDTHH:mm:ss'),
     });
   };
+
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit(this._state);
+  };
+
+  #formCloseHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormCancel(this.#point);
+  };
+
 }

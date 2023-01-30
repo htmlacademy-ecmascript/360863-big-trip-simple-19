@@ -1,8 +1,12 @@
 import AbstractView from '../framework/view/abstract-view';
 import {humanizeDate} from '../utils/utils';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 
 function getOffersTemplate(point, offers) {
+  point.offers.forEach((el) => +el);
+
   return offers.filter((offer) => point.offers.includes(offer.id)).map((el) =>
     `<li class="event__offer">
       <span class="event__offer-title">${el.title}</span>
@@ -14,9 +18,10 @@ function getOffersTemplate(point, offers) {
 
 function getPointTemplate(point, destinations, offers) {
   const pointDestination = destinations.find((el) => el.id === point.destination);
-  const dateFrom = humanizeDate(point.dateFrom);
-  const timeFrom = dayjs(point.dateFrom).format('HH:mm');
-  const timeTo = dayjs(point.dateTo).format('HH:mm');
+  const date = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss');
+  const dateFrom = humanizeDate(date);
+  const timeFrom = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss').format('HH:mm');
+  const timeTo = dayjs(point.dateTo, 'DD-MM-YYTHH:mm:ss').format('HH:mm');
   const offersList = getOffersTemplate(point, offers);
 
   return (`

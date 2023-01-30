@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 
 const DATE_FORMAT = 'MMM D';
 const TIME_FORMAT = 'HH:MM';
@@ -34,14 +36,20 @@ export function humanizeTime(date) {
 }
 
 export function isDateFuture(date) {
-  return !dayjs().isAfter(date);
+  const currentDate = dayjs(date, 'DD-MM-YYTHH:mm:ss');
+
+  return currentDate >= dayjs();
 }
 
-export function updateItem(items, update) {
+/*export function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
-}
+}*/
 
 export function renameProperty(obj, fromKey, toKey) {
   obj[toKey] = obj[fromKey];
   delete obj[fromKey];
+}
+
+export function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 }

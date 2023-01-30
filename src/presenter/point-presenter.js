@@ -1,6 +1,8 @@
 import PointView from '../view/point-view';
 import {remove, render, replace} from '../framework/render';
 import EditPointView from '../view/edit-point-view';
+import {USER_ACTION, UPDATE_TYPE} from '../const';
+import {isDatesEqual} from '../utils/utils';
 
 const MODE = {
   DEFAULT: 'default',
@@ -36,8 +38,9 @@ export default class PointPresenter {
 
     this.#pointComponent = new PointView({
       point: this.#point,
-      offers: this.#offers,
       destinations: this.#destinations,
+      offers: this.#offers,
+      offersByType: this.#offersByType,
       onEditClick: this.#editClickHandler,
     });
 
@@ -48,6 +51,7 @@ export default class PointPresenter {
       offersByType: this.#offersByType,
       onFormSubmit: this.#handlerFormSubmit,
       onCloseClick: this.#handlerOnCloseClick,
+      onDeleteClick: this.#handleDeleteClick,
     });
 
     if (prevPointComponent === null || prevEditPointComponent === null) {
@@ -105,13 +109,28 @@ export default class PointPresenter {
     this.#replacePointToForm();
   };
 
-  #handlerFormSubmit = (point) => {
-    this.#handleDataChange(point);
+  #handlerFormSubmit = (update) => {
+
+    const isMinorUpdate = !isDatesEqual(this.#point.dateFrom, update.dateFrom) || !isDatesEqual(this.#point.dateTo, update.dateTo);
+
+    this.#handleDataChange(
+      USER_ACTION.UPDATE_POINT,
+      isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
+      update,
+    );
     this.#replaceFormToPoint();
   };
 
   #handlerOnCloseClick = () => {
     this.#pointEditComponent.reset(this.#point);
     this.#replaceFormToPoint();
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      USER_ACTION.DELETE_POINT,
+      UPDATE_TYPE.MINOR,
+      point,
+    );
   };
 }

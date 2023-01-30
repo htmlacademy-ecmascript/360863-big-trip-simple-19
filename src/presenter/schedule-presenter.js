@@ -16,7 +16,6 @@ export default class SchedulePresenter {
   #sortingModel;
   #destinations;
   #offersByType;
-  #offers;
   #blankPoint;
   #sortingList;
   #noPointComponent = null;
@@ -62,14 +61,8 @@ export default class SchedulePresenter {
   init() {
     this.#destinations = [...this.#dataModel.destinations];
     this.#offersByType = [...this.#dataModel.offersByType];
-    this.#offers = [...this.#dataModel.offers];
     this.#blankPoint = [...this.#dataModel.blankPoint];
     this.#sortingList = [...this.#sortingModel.sortingList];
-
-    //console.log(this.#offersByType, 111111)
-    //console.log(this.points, 2222)
-    //console.log(this.#offers, 222)
-
 
     this.#renderBoard();
   }
@@ -77,7 +70,6 @@ export default class SchedulePresenter {
   createPoint() {
 
     this.#newPointPresenter = new NewPointPresenter({
-      offers: this.#offers,
       destinations: this.#destinations,
       point: this.#blankPoint[0],
       offersByType: this.#offersByType,
@@ -88,7 +80,7 @@ export default class SchedulePresenter {
 
     this.#currentSortType = SORTING_TYPES.DEFAULT;
     this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
-    this.#newPointPresenter.init(this.#offers, this.#destinations, this.#blankPoint, this.#offersByType);
+    this.#newPointPresenter.init(this.#destinations, this.#blankPoint, this.#offersByType);
   }
 
   #renderBoard() {
@@ -149,20 +141,20 @@ export default class SchedulePresenter {
     render(this.#sortComponent, this.#scheduleContainer);
   }
 
-  #renderPoint({point, offers, destinations, offersByType}) {
+  #renderPoint({point, destinations, offersByType}) {
     const pointPresenter = new PointPresenter({
       scheduleComponent: this.#scheduleComponent.element,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
     });
 
-    pointPresenter.init(point, offers, destinations, offersByType);
+    pointPresenter.init(point, destinations, offersByType);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
 
   #renderPointsList() {
     render(this.#scheduleComponent, this.#scheduleContainer);
-    this.points.forEach((point) => this.#renderPoint({point: point, offers: this.#offers, destinations: this.#destinations, offersByType: this.#offersByType}));
+    this.points.forEach((point) => this.#renderPoint({point: point, destinations: this.#destinations, offersByType: this.#offersByType}));
   }
 
   #renderNoPoints() {
@@ -197,7 +189,7 @@ export default class SchedulePresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UPDATE_TYPE.PATCH:
-        this.#pointPresenter.get(data.id).init(data, this.#offers, this.#destinations, this.#offersByType);
+        this.#pointPresenter.get(data.id).init(data, this.#destinations, this.#offersByType);
         break;
       case UPDATE_TYPE.MINOR:
         this.#clearBoard();

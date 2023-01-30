@@ -58,7 +58,7 @@ function getPointTemplate(point, destinations, offersByType) {
 export default class PointView extends AbstractView {
   #point;
   #destinations;
-  #offers;
+  /*#offers;*/
   #handleEditClick;
   #offersByType;
 

@@ -26,41 +26,35 @@ const dataModel = new DataModel({
   destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION),
 });
 
-dataModel.init().then(() => {
-  const schedulePresenter = new SchedulePresenter({
-    scheduleContainer: tripElements,
-    filterModel,
-    DATA_MODEL: dataModel,
-    SORTING_MODEL,
-    onNewPointDestroy: handleNewPointFormClose
-  });
+const schedulePresenter = new SchedulePresenter({
+  scheduleContainer: tripElements,
+  filterModel,
+  DATA_MODEL: dataModel,
+  SORTING_MODEL,
+  onNewPointDestroy: handleNewPointFormClose
+});
 
-  const filterPresenter = new FilterPresenter ({
-    filterContainer: tripControlElements,
-    filterModel,
-    DATA_MODEL: dataModel
-  });
+const filterPresenter = new FilterPresenter ({
+  filterContainer: tripControlElements,
+  filterModel,
+  DATA_MODEL: dataModel
+});
 
-  const newPointButtonComponent = new NewPointButtonView ({
-    onClick: handleNewPointButtonClick
-  });
+const newPointButtonComponent = new NewPointButtonView ({
+  onClick: handleNewPointButtonClick
+});
 
+function handleNewPointFormClose() {
+  newPointButtonComponent.element.disabled = false;
+}
+
+function handleNewPointButtonClick() {
+  schedulePresenter.createPoint();
+  newPointButtonComponent.element.disabled = true;
+}
+
+filterPresenter.init();
+schedulePresenter.init();
+dataModel.init().finally(() => {
   render(newPointButtonComponent, tripHeaderElement, RenderPosition.BEFOREEND);
-
-  filterPresenter.init();
-  schedulePresenter.init();
-
-  function handleNewPointFormClose() {
-    newPointButtonComponent.element.disabled = false;
-  }
-
-  function handleNewPointButtonClick() {
-    schedulePresenter.createPoint();
-    newPointButtonComponent.element.disabled = true;
-  }
-})
-
-
-
-
-
+});

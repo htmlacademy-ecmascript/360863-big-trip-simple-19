@@ -1,23 +1,22 @@
 import ScheduleView from '../view/schedule-view.js';
-import {render, RenderPosition, remove} from '../framework/render.js';
+import {remove, render, RenderPosition} from '../framework/render.js';
 import EmptyPointsView from '../view/empty-points-view';
 import SortingView from '../view/sorting-view';
 import PointPresenter from './point-presenter';
-import {SORTING_TYPES, UPDATE_TYPE, USER_ACTION, FILTER_TYPE} from '../const';
+import {FILTER_TYPE, SORTING_TYPES, UPDATE_TYPE, USER_ACTION} from '../const';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-dayjs.extend(customParseFormat);
 import {FILTER} from '../utils/filter';
 import NewPointPresenter from './new-point-presenter';
+import LoadingView from '../view/loading-view';
+import ServerErrorView from '../view/server-error-view';
+
+dayjs.extend(customParseFormat);
 
 export default class SchedulePresenter {
   #scheduleContainer;
   #dataModel;
   #sortingModel;
-  #destinations;
-  #offersByType;
-  #offers;
-  #blankPoint;
   #sortingList;
   #noPointComponent = null;
   #scheduleComponent = new ScheduleView();
@@ -29,6 +28,9 @@ export default class SchedulePresenter {
   #filterType = FILTER_TYPE.EVERYTHING;
   #newPointPresenter = null;
   #onNewPointDestroy;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
+  #serverErrorComponent = new ServerErrorView();
 
   constructor({scheduleContainer, filterModel, DATA_MODEL, SORTING_MODEL, onNewPointDestroy}) {
     this.#scheduleContainer = scheduleContainer;
@@ -37,6 +39,7 @@ export default class SchedulePresenter {
     this.#currentSortType = SORTING_TYPES.DEFAULT;
     this.#filterModel = filterModel;
     this.#onNewPointDestroy = onNewPointDestroy;
+    this.#sortingList = this.#sortingModel.sortingList;
 
     this.#dataModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -44,7 +47,7 @@ export default class SchedulePresenter {
 
   get points() {
     this.#filterType = this.#filterModel.filter;
-    const points = [...this.#dataModel.points];
+    const points = this.#dataModel.points;
     const filteredPoints = FILTER[this.#filterType](points);
 
     switch (this.#currentSortType) {
@@ -59,23 +62,28 @@ export default class SchedulePresenter {
     return filteredPoints;
   }
 
-  init() {
-    this.#destinations = [...this.#dataModel.destinations];
-    this.#offersByType = [...this.#dataModel.offersByType];
-    this.#offers = [...this.#dataModel.offers];
-    this.#blankPoint = [...this.#dataModel.blankPoint];
-    this.#sortingList = [...this.#sortingModel.sortingList];
+  get destinations() {
+    return this.#dataModel.destinations;
+  }
 
+  get offersByType() {
+    return this.#dataModel.offersByType;
+  }
+
+  get blankPoint() {
+    return this.#dataModel.blankPoint;
+  }
+
+  init() {
     this.#renderBoard();
   }
 
   createPoint() {
 
     this.#newPointPresenter = new NewPointPresenter({
-      offers: this.#offers,
-      destinations: this.#destinations,
-      point: this.#blankPoint[0],
-      offersByType: this.#offersByType,
+      destinations: this.destinations,
+      point: this.blankPoint,
+      offersByType: this.offersByType,
       pointListContainer: this.#scheduleComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: this.#onNewPointDestroy,
@@ -83,16 +91,36 @@ export default class SchedulePresenter {
 
     this.#currentSortType = SORTING_TYPES.DEFAULT;
     this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
-    this.#newPointPresenter.init(this.#offers, this.#destinations, this.#blankPoint, this.#offersByType);
+    this.#newPointPresenter.init(this.destinations, this.blankPoint, this.offersByType);
+  }
+
+  #renderServerError() {
+    render(this.#serverErrorComponent, this.#scheduleComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#scheduleComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderBoard() {
-    if (this.points.length === 0) {
+
+    render(this.#scheduleComponent, this.#scheduleContainer);
+
+    if (this.points.length === 0 && !this.#isLoading ) {
       this.#renderNoPoints();
     }
 
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    const points = this.points;
+    const destinations = this.destinations;
+    const offersByType = this.offersByType;
+
     this.#renderSort();
-    this.#renderPointsList();
+    this.#renderPointsList(points, destinations, offersByType);
   }
 
   #clearBoard(resetSortType = false) {
@@ -108,6 +136,8 @@ export default class SchedulePresenter {
     }
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
+
     if(this.#noPointComponent) {
       remove(this.#noPointComponent);
     }
@@ -144,20 +174,20 @@ export default class SchedulePresenter {
     render(this.#sortComponent, this.#scheduleContainer);
   }
 
-  #renderPoint({point, offers, destinations, offersByType}) {
+  #renderPoint({point, destinations, offersByType}) {
     const pointPresenter = new PointPresenter({
       scheduleComponent: this.#scheduleComponent.element,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
     });
 
-    pointPresenter.init(point, offers, destinations, offersByType);
+    pointPresenter.init(point, destinations, offersByType);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
 
-  #renderPointsList() {
+  #renderPointsList(points, destinations, offersByType) {
     render(this.#scheduleComponent, this.#scheduleContainer);
-    this.points.forEach((point) => this.#renderPoint({point: point, offers: this.#offers, destinations: this.#destinations, offersByType: this.#offersByType}));
+    points.forEach((point) => this.#renderPoint({point: point, destinations: destinations, offersByType: offersByType}));
   }
 
   #renderNoPoints() {
@@ -192,7 +222,7 @@ export default class SchedulePresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UPDATE_TYPE.PATCH:
-        this.#pointPresenter.get(data.id).init(data, this.#offers, this.#destinations, this.#offersByType);
+        this.#pointPresenter.get(data.id).init(data, this.destinations, this.offersByType);
         break;
       case UPDATE_TYPE.MINOR:
         this.#clearBoard();
@@ -200,6 +230,11 @@ export default class SchedulePresenter {
         break;
       case UPDATE_TYPE.MAJOR:
         this.#clearBoard(true);
+        this.#renderBoard();
+        break;
+      case UPDATE_TYPE.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderBoard();
         break;
     }

@@ -36,14 +36,10 @@ export function humanizeTime(date) {
 }
 
 export function isDateFuture(date) {
-  const currentDate = dayjs(date, 'DD-MM-YYTHH:mm:ss');
+  const currentDate = dayjs(new Date(date));
 
   return currentDate >= dayjs();
 }
-
-/*export function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}*/
 
 export function renameProperty(obj, fromKey, toKey) {
   obj[toKey] = obj[fromKey];

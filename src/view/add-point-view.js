@@ -42,11 +42,11 @@ function createDestinationsTemplate(destinations){
   return destinations.map((el) => `<option value="${el.name}"></option>`);
 }
 
-function getAddPointTemplate(offers, destinations, point, offersByType) {
+function getAddPointTemplate(destinations, point, offersByType) {
   const typesTemplate = createTypesTemplate(point.type, point.id);
   const pointDestination = destinations.find((el) => el.id === point.destination);
-  const timeFrom = dayjs(point.dateFrom, 'DD-MM-YYTHH:mm:ss').format('DD/MM/YY HH:mm');
-  const timeTo = dayjs(point.dateTo, 'DD-MM-YYTHH:mm:ss').format('DD/MM/YY HH:mm');
+  const timeFrom = dayjs(point.dateFrom).format('DD/MM/YY HH:mm');
+  const timeTo = dayjs(point.dateTo).format('DD/MM/YY HH:mm');
   const offersTemplate = createOffersTemplate(offersByType, point);
   const photosTemplate = createPhotosTemplate(destinations, point);
   const destinationsTemplate = createDestinationsTemplate(destinations);
@@ -128,7 +128,6 @@ function getAddPointTemplate(offers, destinations, point, offersByType) {
 }
 
 export default class AddPointView extends AbstractStatefulView {
-  #offers;
   #destinations;
   #offersByType;
   #point;
@@ -138,9 +137,8 @@ export default class AddPointView extends AbstractStatefulView {
   #handleFormCancel;
   _state;
 
-  constructor({offers, destinations, point, offersByType, onFormSubmit, onFormCancel}) {
+  constructor({destinations, point, offersByType, onFormSubmit, onFormCancel}) {
     super();
-    this.#offers = offers;
     this.#destinations = destinations;
     this._state = point;
     this.#point = Object.assign({}, point);
@@ -152,7 +150,7 @@ export default class AddPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return getAddPointTemplate(this.#offers, this.#destinations, this._state, this.#offersByType);
+    return getAddPointTemplate(this.#destinations, this._state, this.#offersByType);
   }
 
   _restoreHandlers() {
@@ -214,7 +212,7 @@ export default class AddPointView extends AbstractStatefulView {
   #startTimeChangeHandler = (evt) => {
     evt.preventDefault();
     const dateValue = `${evt.target.value}`;
-    this._state.dateFrom = dayjs(dateValue, 'DD/MM/YY HH:mm').format('DD-MM-YYTHH:mm:ss');
+    this._state.dateFrom = new Date(dayjs(dateValue, 'DD/MM/YY HH:mm'));
     this.updateElement({
       dateFrom: this._state.dateFrom,
     });
@@ -223,7 +221,7 @@ export default class AddPointView extends AbstractStatefulView {
   #endTimeChangeHandler = (evt) => {
     evt.preventDefault();
     const dateValue = `${evt.target.value}`;
-    this._state.dateTo = dayjs(dateValue, 'DD/MM/YY HH:mm').format('DD-MM-YYTHH:mm:ss');
+    this._state.dateTo = new Date(dayjs(dateValue, 'DD/MM/YY HH:mm'));
     this.updateElement({
       dateTo: this._state.dateTo,
     });
@@ -281,6 +279,7 @@ export default class AddPointView extends AbstractStatefulView {
 
   #formCloseHandler = (evt) => {
     evt.preventDefault();
+    this._state = this.#point;
     this.#handleFormCancel(this.#point);
   };
 

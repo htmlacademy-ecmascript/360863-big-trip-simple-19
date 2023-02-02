@@ -27,6 +27,7 @@ export default class PointsApiService extends ApiService {
   }
 
   async addPoint(point) {
+    delete point.id;
     const response = await this._load({
       url: 'points',
       method: Method.POST,

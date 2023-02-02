@@ -104,7 +104,7 @@ export default class DataModel extends Observable {
       ];
       this._notify(updateType);
     } catch (err) {
-      throw new Error('Can not delete point')
+      throw new Error('Can not delete point');
     }
   }
 

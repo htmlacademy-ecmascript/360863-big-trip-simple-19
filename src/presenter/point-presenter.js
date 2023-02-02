@@ -60,7 +60,9 @@ export default class PointPresenter {
     }
 
     if(this.#mode === MODE.EDITING) {
-      replace(this.#pointEditComponent, prevEditPointComponent);
+      //replace(this.#pointEditComponent, prevEditPointComponent);
+      replace(this.#pointComponent, prevEditPointComponent);
+      this.#mode = MODE.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -105,6 +107,41 @@ export default class PointPresenter {
     this.#replacePointToForm();
   };
 
+  setSaving() {
+    if (this.#mode === MODE.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === MODE.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === MODE.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
   #handlerFormSubmit = (update) => {
 
     const isMinorUpdate = !isDatesEqual(this.#point.dateFrom, update.dateFrom) || !isDatesEqual(this.#point.dateTo, update.dateTo);
@@ -114,7 +151,7 @@ export default class PointPresenter {
       isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
       update,
     );
-    this.#replaceFormToPoint();
+    //this.#replaceFormToPoint();
   };
 
   #handlerOnCloseClick = (update) => {

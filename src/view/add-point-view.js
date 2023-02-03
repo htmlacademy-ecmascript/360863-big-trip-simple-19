@@ -6,21 +6,21 @@ import 'flatpickr/dist/flatpickr.min.css';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
-function createTypesTemplate(currentType, pointId) {
+function createTypesTemplate(currentType, pointId, isDisabled) {
   return POINT_TYPES.map((type) =>
     `<div class="event__type-item">
-      <input id="event-type-${type}-${pointId}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
+      <input id="event-type-${type}-${pointId}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${pointId}">${type}</label>
     </div>`).join('');
 }
 
-function createOffersTemplate(offersByType, point) {
+function createOffersTemplate(offersByType, point, isDisabled) {
   const offers = offersByType.find((el) => {if(el.type === point.type){return el.type;}}).offers;
 
   return offers.map((offer) =>
     `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.replace(/\s+/g, '-').toLowerCase()}-${point.id}" type="checkbox" name="event-offer-${offer.title}"
-      ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''} data-offer-id="${offer.id}">
+      ${point.offers.filter((el) => el === offer.id).length > 0 ? 'checked' : ''} data-offer-id="${offer.id}" ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.title.replace(/\s+/g, '-').toLowerCase()}-${point.id}">
         <span class="event__offer-title">Add ${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -42,12 +42,12 @@ function createDestinationsTemplate(destinations){
   return destinations.map((el) => `<option value="${el.name}"></option>`);
 }
 
-function getAddPointTemplate(destinations, point, offersByType) {
-  const typesTemplate = createTypesTemplate(point.type, point.id);
+function getAddPointTemplate(destinations, point, offersByType, isDisabled, isSaving, isDeleting) {
+  const typesTemplate = createTypesTemplate(point.type, point.id, isDisabled);
   const pointDestination = destinations.find((el) => el.id === point.destination);
   const timeFrom = dayjs(point.dateFrom).format('DD/MM/YY HH:mm');
   const timeTo = dayjs(point.dateTo).format('DD/MM/YY HH:mm');
-  const offersTemplate = createOffersTemplate(offersByType, point);
+  const offersTemplate = createOffersTemplate(offersByType, point, isDisabled);
   const photosTemplate = createPhotosTemplate(destinations, point);
   const destinationsTemplate = createDestinationsTemplate(destinations);
 
@@ -75,7 +75,7 @@ function getAddPointTemplate(destinations, point, offersByType) {
           <label class="event__label  event__type-output" for="event-destination-${point.id}">
             ${point.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-${point.id}">
+          <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${pointDestination.name}" ${isDisabled ? 'disabled' : ''} list="destination-list-${point.id}">
           <datalist id="destination-list-${point.id}">
             ${destinationsTemplate}
           </datalist>
@@ -83,10 +83,10 @@ function getAddPointTemplate(destinations, point, offersByType) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-${point.id}">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-${point.id}" type="text" name="event-start-time" value="${timeFrom}">
+          <input class="event__input  event__input--time" id="event-start-time-${point.id}" type="text" name="event-start-time" value="${timeFrom}" ${isDisabled ? 'disabled' : ''}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-${point.id}">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-${point.id}" type="text" name="event-end-time" value="${timeTo}">
+          <input class="event__input  event__input--time" id="event-end-time-${point.id}" type="text" name="event-end-time" value="${timeTo}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -94,11 +94,11 @@ function getAddPointTemplate(destinations, point, offersByType) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${point.id}" type="number" name="event-price" value="${point.basePrice}">
+          <input class="event__input  event__input--price" id="event-price-${point.id}" type="number" name="event-price" value="${point.basePrice}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Canceling...' : 'Cancel'}</button>
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
@@ -140,7 +140,7 @@ export default class AddPointView extends AbstractStatefulView {
   constructor({destinations, point, offersByType, onFormSubmit, onFormCancel}) {
     super();
     this.#destinations = destinations;
-    this._state = point;
+    this._state = AddPointView.parsePointToState(point);
     this.#point = Object.assign({}, point);
     this.#offersByType = offersByType;
     this.#handleFormSubmit = onFormSubmit;
@@ -150,7 +150,7 @@ export default class AddPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return getAddPointTemplate(this.#destinations, this._state, this.#offersByType);
+    return getAddPointTemplate(this.#destinations, this._state, this.#offersByType, this._state.isDisabled, this._state.isSaving, this._state.isDeleting);
   }
 
   _restoreHandlers() {
@@ -167,7 +167,9 @@ export default class AddPointView extends AbstractStatefulView {
 
   #reset = () => {
     this._state = this.#point;
-    this.updateElement(this._state);
+    this.updateElement(
+      AddPointView.parsePointToState(this._state),
+    );
   };
 
   removeElement() {
@@ -274,13 +276,29 @@ export default class AddPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this._state);
+    this.#handleFormSubmit(AddPointView.parseStateToPoint(this._state));
   };
 
   #formCloseHandler = (evt) => {
     evt.preventDefault();
     this._state = this.#point;
-    this.#handleFormCancel(this.#point);
+    this.#handleFormCancel(AddPointView.parseStateToPoint(this._state));
   };
 
+  static parsePointToState(point) {
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  }
+
+  static parseStateToPoint(state) {
+    const point = {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
+  }
 }

@@ -53,8 +53,13 @@ function handleNewPointButtonClick() {
   newPointButtonComponent.element.disabled = true;
 }
 
-filterPresenter.init();
 schedulePresenter.init();
-dataModel.init().finally(() => {
-  render(newPointButtonComponent, tripHeaderElement, RenderPosition.BEFOREEND);
-});
+dataModel.init()
+  .then(() => {
+    filterPresenter.init();
+    render(newPointButtonComponent, tripHeaderElement, RenderPosition.BEFOREEND);
+  })
+  .catch(() => {
+    schedulePresenter.renderServerError();
+    throw new Error('Can not upload data');
+  });

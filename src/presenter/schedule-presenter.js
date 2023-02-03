@@ -10,8 +10,13 @@ import {FILTER} from '../utils/filter';
 import NewPointPresenter from './new-point-presenter';
 import LoadingView from '../view/loading-view';
 import ServerErrorView from '../view/server-error-view';
-
 dayjs.extend(customParseFormat);
+import UiBlocker from '../framework/ui-blocker/ui-blocker';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class SchedulePresenter {
   #scheduleContainer;
@@ -31,6 +36,10 @@ export default class SchedulePresenter {
   #loadingComponent = new LoadingView();
   #isLoading = true;
   #serverErrorComponent = new ServerErrorView();
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({scheduleContainer, filterModel, DATA_MODEL, SORTING_MODEL, onNewPointDestroy}) {
     this.#scheduleContainer = scheduleContainer;
@@ -100,6 +109,10 @@ export default class SchedulePresenter {
 
   #renderLoading() {
     render(this.#loadingComponent, this.#scheduleComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
+  renderServerError() {
+    render(this.#serverErrorComponent, this.#scheduleComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderBoard() {
@@ -205,18 +218,38 @@ export default class SchedulePresenter {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case USER_ACTION.UPDATE_POINT:
-        this.#dataModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setSaving();
+        try {
+          await this.#dataModel.updatePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
       case USER_ACTION.ADD_POINT:
-        this.#dataModel.addPoint(updateType, update);
+        this.#newPointPresenter.setSaving();
+
+        try {
+          await this.#dataModel.addPoint(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case USER_ACTION.DELETE_POINT:
-        this.#dataModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setDeleting();
+        try {
+          await this.#dataModel.deletePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {

@@ -23,10 +23,6 @@ export function getRandomArray(maxLength, maxNumber) {
   return ARR;
 }
 
-export function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
 export function humanizeDate(date) {
   return date ? dayjs(date).format(DATE_FORMAT) : '';
 }
@@ -39,11 +35,6 @@ export function isDateFuture(date) {
   const currentDate = dayjs(new Date(date));
 
   return currentDate >= dayjs();
-}
-
-export function renameProperty(obj, fromKey, toKey) {
-  obj[toKey] = obj[fromKey];
-  delete obj[fromKey];
 }
 
 export function isDatesEqual(dateA, dateB) {

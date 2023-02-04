@@ -13,7 +13,6 @@ const headerElement = document.querySelector('.page-header');
 const mainElement = document.querySelector('.page-main');
 const tripControlElements = headerElement.querySelector('.trip-controls__filters');
 const tripElements = mainElement.querySelector('.trip-events');
-//const DATA_MODEL = new DataModel();
 const SORTING_MODEL = new SortingModel();
 const filterModel = new FilterModel();
 const tripHeaderElement = document.querySelector('.trip-main');

@@ -151,7 +151,6 @@ export default class PointPresenter {
       isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
       update,
     );
-    //this.#replaceFormToPoint();
   };
 
   #handlerOnCloseClick = (update) => {
